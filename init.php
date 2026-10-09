@@ -1,4 +1,5 @@
 <?php
+// Initialisation de la base de données quizBD
 require 'includes/db.php';
  
 $pdo->exec('CREATE TABLE IF NOT EXISTS users (

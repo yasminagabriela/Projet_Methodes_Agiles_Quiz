@@ -1,5 +1,5 @@
 <?php
-// Connexion à la base DexBD
+// Connexion à la base quizBD
 $dsn = 'mysql:host=localhost;dbname=QuizBD;charset=utf8mb4';
 $utilisateur = 'root';
 $motDePasse = '';
