@@ -12,4 +12,3 @@ VALUES ("Farid", "Farid")
 )');
 
 echo 'Base quizDB initialisée !';
-?>
