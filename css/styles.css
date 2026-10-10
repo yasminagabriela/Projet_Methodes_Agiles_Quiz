@@ -2,6 +2,9 @@ body {
     margin: 0;
     color: white;
     font-family: Arial, sans-serif;
+    background-color: white;
+    color: #191919;
+    transition: 0.3s;
 }
 
 .container {
@@ -25,17 +28,18 @@ body {
 }
 
 .login-box h1 {
-    text-align: center;
+    text-align: left;
     font-size: 30px;
     margin-bottom: 10px;
     color: black;
 }
 
 .login-box p {
-    text-align: center;
+    text-align: left;
     color: #999;
     font-size: 14px;
     margin-bottom: 35px;
+    margin-bottom: 50px;
 }
 
 form {
@@ -51,7 +55,7 @@ label {
 input {
     padding: 15px;
     background-color: transparent;
-    border: 1px solid #444;
+    border: 1px solid #F5E9EC;
     border-radius: 20px;
     color: white;
     font-size: 14px;
@@ -68,8 +72,8 @@ select {
 
 .connecter {
     padding: 15px;
-    background-color: black;
-    color: white;
+    background-color: #D2AAB8;
+    color: #ffffff;
     border: none;
     border-radius: 20px;
     margin-top: 15px;
@@ -77,9 +81,13 @@ select {
     font-size: 14px;
 }
 
+.connecter:hover {
+    background-color: #C493A5;
+}
+
 .image_container {
-    width: 550px;
-    height: 85vh;
+    width: 650px;
+    height: 95vh;
     flex-shrink: 0;
     margin-left: auto;
 }
@@ -94,9 +102,9 @@ select {
 
 .role-selection {
     display: flex;
-    background-color: black;
+    background-color: #F5E9EC;
     padding: 5px;
-    border-radius: 20px;
+    border-radius: 30px;
     margin-bottom: 25px;
     gap: 5px;
 }
@@ -105,7 +113,7 @@ select {
     flex: 1;
     padding: 15px;
     text-align: center;
-    color: #999;
+    color: #806B74;
     border-radius: 20px;
     cursor: pointer;
 }
@@ -115,6 +123,59 @@ select {
 }
 
 .selected {
-    background-color: #302f2f;
+    background-color: #D2AAB8;
+    color: #ffffff;
+}
+
+.theme-toggle {
+    position: fixed;
+    bottom: 30px;
+    left: 30px;
+    background: transparent;
+    border: none;
+    color: #191919;
+    cursor: pointer;
+    font-size: 25px;
+}
+
+.dark-mode .theme-toggle {
     color: white;
+}
+
+/* Dark mode */
+body.dark-mode {
+    background-color: #191919;
+    color: white;
+}
+
+.dark-mode .login-box h1 {
+    color: white;
+}
+
+.dark-mode input {
+    background-color: #242424;
+    border: 1px solid #444;
+    color: white;
+}
+
+.dark-mode .role-selection {
+    background-color: #292929;
+}
+
+.dark-mode .role-option {
+    color: #aaa;
+}
+
+.dark-mode .selected {
+    background-color: #D2AAB8;
+    color: #191919;
+}
+
+.dark-mode .connecter {
+    background-color: #D2AAB8;
+    color: #191919;
+}
+
+.dark-mode .connecter:hover {
+    background-color: #C493A5;
 }

@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connexion</title>
+    <title>Quivvi</title>
     <link rel="stylesheet" href="css/styles.css">
-    <!-- <link rel="icon" type="image/png" href="images/background.png"> --> 
+    <link rel="icon" type="image/png" href="images/icon.png">
 </head>
 <body>
     <div class="container">
         <div class="content">
             <div class="login-box">
                 <h1>Bienvenue !</h1>
-                <p>Sign in to continue to Quiz App</p>
+                <p>Connectez-vous pour accéder à Quivvi</p>
 
                 <form action="" method="post">
                     <label for="role">Vous êtes</label>
@@ -50,6 +50,21 @@
         </div>
     </div>
 </body>
+
+<!-- Switch dark/light mode -->
+<button class="theme-toggle" id="theme-toggle" type="button">☾</button>
+<script>
+    const boutonTheme = document.getElementById("theme-toggle");
+
+    boutonTheme.addEventListener("click", function() {
+        document.body.classList.toggle("dark-mode");
+        if (document.body.classList.contains("dark-mode")) {
+            boutonTheme.textContent = "☀";
+        } else {
+            boutonTheme.textContent = "☾";
+        }
+    });
+</script>
 
 </body>
 </html>
