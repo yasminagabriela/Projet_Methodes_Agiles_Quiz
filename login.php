@@ -10,6 +10,12 @@
 <body>
     <div class="container">
         <div class="content">
+            
+            <!-- Logo du site -->
+            <a href="index.php" class="logo">
+                <img src="images/logo.png" alt="Qivvi">
+            </a>
+
             <div class="login-box">
                 <h1>Bienvenue !</h1>
                 <p>Connectez-vous pour accéder à Quivvi</p>

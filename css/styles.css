@@ -179,3 +179,12 @@ body.dark-mode {
 .dark-mode .connecter:hover {
     background-color: #C493A5;
 }
+
+/* Logo */
+.logo img {
+    width: 130px;
+    height: auto;
+    position: absolute;
+    top: 30px;
+    left: 40px;    
+}
