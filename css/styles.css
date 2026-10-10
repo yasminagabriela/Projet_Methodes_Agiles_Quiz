@@ -133,13 +133,13 @@ select {
     left: 30px;
     background: transparent;
     border: none;
-    color: #191919;
+    color: #C493A5;
     cursor: pointer;
     font-size: 25px;
 }
 
 .dark-mode .theme-toggle {
-    color: white;
+    color: #C493A5;
 }
 
 /* Dark mode */
