@@ -300,10 +300,9 @@ body.dark-mode {
 
 /* Index.php page */
 
-/* Contenu centré */
 .dashboard-content {
     max-width: 980px;
-    margin: 40px auto;
+    margin: 90px auto;
     padding: 0 20px;
 }
 
@@ -314,10 +313,11 @@ body.dark-mode {
     background-position: center;
     background-repeat: no-repeat;
     border-radius: 36px;
-    width: 900px;
-    margin-top: 100px;
+    width: 100%;
+    margin-top: 0;
+    padding: 30px 40px;
+    box-sizing: border-box;
     height: auto;
-    padding:20px;
 }
 
 .dashboard-banner h1 {
@@ -415,4 +415,75 @@ body.dark-mode {
 
 .dark-mode .quiz-form button {
     color: #342D31;
+}
+
+/* Stat Cards */
+.stats {
+    display: flex;
+    gap: 20px;
+    width: 100%;
+    margin: 25px 0 35px;
+}
+
+.stat-card {
+    flex: 1;
+    min-width: 0;
+    padding: 5px 25px;
+    border-radius: 35px;
+    margin-top: 0px;
+}
+
+.stat-card h2 {
+    font-size: 35px;
+    margin-bottom: 5px;
+    margin-top: 10px;
+}
+
+.stat-card p {
+    margin-top: 0;
+}
+
+.created {
+    background-color: #F5E7DC;
+}
+
+.published {
+    background-color: #E3EAF6;
+}
+
+.drafts {
+    background-color: #F2E3E9;
+}
+
+.submitted {
+    background-color: #F9F5DE;
+}
+
+.stat-card h2 {
+    color: #342D31;
+}
+
+.stat-card p {
+    color: #766D72;
+}
+
+/* Dark mode | Cards */
+.dark-mode .stat-card h2{
+    color: white;
+}
+
+.dark-mode .created {
+    background-color: #3a2c28;
+}
+
+.dark-mode .published {
+    background-color: #25303f;
+}
+
+.dark-mode .drafts {
+    background-color: #3a2830;
+}
+
+.dark-mode .submitted {
+    background-color: #38331f;
 }

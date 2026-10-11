@@ -26,6 +26,26 @@
                     <button type="submit">Créer un quiz</button>
                 </form>
             </section>
+
+            <div class="stats">
+                <div class="stat-card created">
+                    <h2>1</h2>
+                    <p>Quiz créés</p>
+                </div>
+                <div class="stat-card published">
+                    <h2>1</h2>
+                    <p>Quiz publiés</p>
+                </div>
+                <div class="stat-card drafts">
+                    <h2>0</h2>
+                    <p>Brouillons</p>
+                </div>
+                <div class="stat-card submitted">
+                    <h2>0</h2>
+                    <p>Quiz remis</p>
+                </div>
+            </div>
+            <h2>Mes quiz</h2>
         </main>
 
     <!-- Footer -->
