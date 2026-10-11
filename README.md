@@ -7,7 +7,7 @@ Ce projet est réalisé en équipe dans le cadre du cours **Méthodes Agiles** a
 ## Screenshots
 
 ### Login Page
-![Login Page](images/login.png)
+<img src="images/login-page.png" alt="Page de connexion Qivvi" width="700">
 
 ### Dashboard
 <!-- ![Dashboard](images/dashboard.png) -->
