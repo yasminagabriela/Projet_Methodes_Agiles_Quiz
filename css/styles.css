@@ -139,8 +139,8 @@ select {
 
 .theme-toggle {
     position: fixed;
-    top: 30px;
-    right: 40px;
+    top: 20px;
+    right: 20px;
     width: 40px;
     height: 40px;
     padding: 5px;
@@ -286,4 +286,96 @@ body.dark-mode {
     border-top: 1px solid #b5adb4;
     color: #888;
     font-size: 14px;
+}
+
+/* Index.php page */
+
+/* Contenu centré */
+.dashboard-content {
+    max-width: 980px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+/* Bannière */
+.dashboard-banner {
+    background-image: url("../images/light-banner.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 36px;
+    width: auto;
+    margin-top: 100px;
+    height: 180px;
+    padding: 40px;
+}
+
+.dashboard-banner h1 {
+    font-size: 40px;
+    margin-bottom: 10px;
+    color: #342D31;
+}
+
+.dashboard-banner p {
+    color: #766D72;
+    max-width: 460px;
+    margin-bottom: 25px;
+}
+
+/* Formulaire horizontal */
+.quiz-form {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    max-width: 560px;
+}
+
+.quiz-form input {
+    flex: 1;
+    min-width: 0;
+    padding: 18px 22px;
+    border: 1px solid #EADDE2;
+    border-radius: 999px;
+    background-color: #FFFDFD;
+    font-size: 16px;
+}
+
+.quiz-form button {
+    padding: 18px 25px;
+    border: none;
+    border-radius: 999px;
+    background-color: #B5879D;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+/* Utilisateur et déconnexion */
+.dashboard-user {
+    position: absolute;
+    top: 20px;
+    right: 85px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.current-user {
+    color: #766D72;
+    font-size: 18px;
+}
+
+.deconnecter {
+    font: inherit;
+    font-size: 14px;
+    padding: 8px 15px;
+    background-color: #F4EAEE;
+    color: #342D31;
+    border: none;
+    border-radius: 999px;
+    cursor: pointer;
+}
+
+.deconnecter:hover {
+    background-color: #F6ECF0;
 }

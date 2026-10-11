@@ -44,9 +44,7 @@
                         <input type="password" id="mdp" name="mdp"
                             placeholder="Enter your password" required>
 
-                        <button class="connecter" type="submit">
-                            Connexion
-                        </button>
+                        <button class="connecter" type="submit">Connexion</button>
                     </form>
                 </div>
             </div>
