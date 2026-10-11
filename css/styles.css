@@ -68,6 +68,11 @@ input {
     font-size: 15px;
 }
 
+input:focus {
+    outline: none;
+    border: 1px solid #c9a0b3;
+}
+
 select {
     padding: 15px;
     background-color: #242424;
@@ -187,6 +192,11 @@ body.dark-mode {
     color: white;
 }
 
+.dark-mode input:focus {
+    outline: none;
+    border: 1px solid #B5879D;
+}
+
 .dark-mode .role-selection {
     background-color: #292929;
 }
@@ -198,7 +208,7 @@ body.dark-mode {
 .dark-mode .selected, 
 .dark-mode .connecter {
     background-color: #B58F9E;
-    color: white;
+    color: #393037;
 }
 
 .dark-mode .connecter:hover {
@@ -345,14 +355,14 @@ body.dark-mode {
 
 .quiz-form input:focus {
     outline: none;
-    border: 1px solid #B5879D;
+    border: 1px solid #c9a0b3;
 }
 
 .quiz-form button {
     padding: 18px 25px;
     border: none;
     border-radius: 999px;
-    background-color: #B5879D;
+    background-color: #c9a0b3;
     color: white;
     font-size: 16px;
     cursor: pointer;
@@ -386,4 +396,23 @@ body.dark-mode {
 
 .deconnecter:hover {
     background-color: #F6ECF0;
+}
+
+/* Dark mode banner */
+.dark-mode .dashboard-banner {
+    background-image: url("../images/dark-banner.png");
+}
+
+.dark-mode .dashboard-banner h1 {
+    color: white;
+}
+
+.dark-mode .quiz-form input {
+    background-color: #242424;
+    border: 1px solid #444;
+    color: white;
+}
+
+.dark-mode .quiz-form button {
+    color: #342D31;
 }
