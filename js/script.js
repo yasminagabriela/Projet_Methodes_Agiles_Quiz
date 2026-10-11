@@ -25,3 +25,5 @@ const enseignant = document.getElementById("enseignant-label");
         enseignant.classList.add("selected");
         etudiant.classList.remove("selected");
     });
+
+/* Connexion */
