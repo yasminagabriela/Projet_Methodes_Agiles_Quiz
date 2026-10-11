@@ -297,17 +297,17 @@ body.dark-mode {
     padding: 0 20px;
 }
 
-/* Bannière */
+/* Banner */
 .dashboard-banner {
     background-image: url("../images/light-banner.png");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     border-radius: 36px;
-    width: auto;
+    width: 900px;
     margin-top: 100px;
-    height: 180px;
-    padding: 40px;
+    height: auto;
+    padding:20px;
 }
 
 .dashboard-banner h1 {
@@ -322,9 +322,10 @@ body.dark-mode {
     margin-bottom: 25px;
 }
 
-/* Formulaire horizontal */
+/* Formulaire */
 .quiz-form {
     display: flex;
+    flex-direction: row;
     align-items: center;
     gap: 10px;
     max-width: 560px;
@@ -332,12 +333,19 @@ body.dark-mode {
 
 .quiz-form input {
     flex: 1;
+    height: 20px;
     min-width: 0;
     padding: 18px 22px;
     border: 1px solid #EADDE2;
     border-radius: 999px;
     background-color: #FFFDFD;
     font-size: 16px;
+    color: #342D31;
+}
+
+.quiz-form input:focus {
+    outline: none;
+    border: 1px solid #B5879D;
 }
 
 .quiz-form button {
