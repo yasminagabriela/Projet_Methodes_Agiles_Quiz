@@ -19,8 +19,9 @@ body {
 .content {
     flex: 1;
     display: flex;
-    justify-content: center;
-    align-items: center;
+    justify-content: left;
+    align-items: left;
+    margin-left: 80px;
 }
 
 .login-box {
@@ -29,17 +30,17 @@ body {
 
 .login-box h1 {
     text-align: left;
-    font-size: 30px;
-    margin-bottom: 10px;
-    color: black;
+    font-size: 38px;
+    margin-bottom: 12px;
+    font-weight: 600;
+    color: #393037;
 }
 
 .login-box p {
     text-align: left;
-    color: #999;
-    font-size: 14px;
-    margin-bottom: 35px;
-    margin-bottom: 50px;
+    color: #817780;
+    font-size: 15px;
+    margin-bottom: 40px;
 }
 
 form {
@@ -50,14 +51,15 @@ form {
 
 label {
     font-size: 14px;
+    color: #393037;
 }
 
 input {
     padding: 15px;
     background-color: transparent;
-    border: 1px solid #F5E9EC;
+    border: 1px solid #E7DDE1;
     border-radius: 20px;
-    color: white;
+    color: #817780;
     font-size: 14px;
 }
 
@@ -72,8 +74,8 @@ select {
 
 .connecter {
     padding: 15px;
-    background-color: #D2AAB8;
-    color: #ffffff;
+    background-color: #B58F9E;
+    color: white;
     border: none;
     border-radius: 20px;
     margin-top: 15px;
@@ -82,7 +84,7 @@ select {
 }
 
 .connecter:hover {
-    background-color: #C493A5;
+    background-color: #A67D8E;
 }
 
 .image_container {
@@ -102,7 +104,7 @@ select {
 
 .role-selection {
     display: flex;
-    background-color: #F5E9EC;
+    background-color: #EDE4E6;
     padding: 5px;
     border-radius: 30px;
     margin-bottom: 25px;
@@ -123,28 +125,47 @@ select {
 }
 
 .selected {
-    background-color: #D2AAB8;
-    color: #ffffff;
+    background-color: #B58F9E;
+    color: white;
 }
 
 .theme-toggle {
     position: fixed;
-    bottom: 30px;
-    left: 30px;
-    background: transparent;
+    top: 40px;
+    right: 40px;
+    width: 40px;
+    height: 40px;
+    padding: 5px;
     border: none;
-    color: #C493A5;
+    border-radius: 50%;
+    background: transparent;
     cursor: pointer;
-    font-size: 25px;
+    transition: background-color 0.3s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.dark-mode .theme-toggle {
-    color: #C493A5;
+.theme-toggle:hover {
+    background-color: #E8DDE1;
 }
+
+.theme-toggle img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    filter: brightness(0) saturate(100%) invert(65%) sepia(12%) saturate(600%) hue-rotate(290deg);
+}
+
+.dark-mode .theme-toggle:hover {
+    background-color: #c8a8b580;
+}
+
+
 
 /* Dark mode */
 body.dark-mode {
-    background-color: #191919;
+    background-color: #1C1B1C;
     color: white;
 }
 
@@ -166,14 +187,10 @@ body.dark-mode {
     color: #aaa;
 }
 
-.dark-mode .selected {
-    background-color: #D2AAB8;
-    color: #191919;
-}
-
+.dark-mode .selected, 
 .dark-mode .connecter {
-    background-color: #D2AAB8;
-    color: #191919;
+    background-color: #B58F9E;
+    color: white;
 }
 
 .dark-mode .connecter:hover {
@@ -182,9 +199,70 @@ body.dark-mode {
 
 /* Logo */
 .logo img {
-    width: 130px;
+    width: 110px;
     height: auto;
     position: absolute;
-    top: 30px;
-    left: 40px;    
+    top: 20px;
+    left: 20px;    
+}
+
+/* Footer */
+.footer {
+    background-color: #262326;
+    color: white;
+    padding: 50px 50px 25px;
+}
+
+.footer-container {
+    display: flex;
+    justify-content: flex-start;
+    gap: 100px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.footer-brand {
+    margin-right: 300px;
+}
+
+.footer-brand img {
+    width: 150px;
+    height: auto;
+}
+
+.footer-column {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Remove the gap between names */
+.footer-column p {
+    margin: 0;
+}
+
+.footer-column h4 {
+    color: #C8A8B5;
+    font-size: 14px;
+    font-weight: 500;
+    margin: 0 0 10px;
+}
+
+.footer-column a, .footer-column p {
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.footer-column a:hover {
+    color: #c9adb9;
+}
+
+.footer-bottom {
+    max-width: 1400px;
+    margin: 45px auto 0;
+    padding-top: 20px;
+    border-top: 1px solid #333;
+    color: #888;
+    font-size: 12px;
 }
