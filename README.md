@@ -4,6 +4,15 @@ Qivvi est une application web de quiz qui permet aux enseignants de créer et de
 
 Ce projet est réalisé en équipe dans le cadre du cours **Méthodes Agiles** au Collège Ahuntsic.
 
+## Screenshots
+
+### Login Page
+![Login Page](images/login.png)
+
+### Dashboard
+<!-- ![Dashboard](images/dashboard.png) -->
+
+
 ## Fonctionnalités
 
 ### Enseignants
