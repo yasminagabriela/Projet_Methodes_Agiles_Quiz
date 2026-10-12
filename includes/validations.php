@@ -12,12 +12,16 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $username = $_POST['nom'] ?? '';
 $password = $_POST['mdp'] ?? '';
 
-$requete = $pdo->prepare("SELECT * FROM users WHERE username = ?");
-$requete->execute([$username]);
-$user = $requete->fetch();
 
-// === -> case-sensitive
-if ($user && $username === 'Farid' && $password === $user['password']) {
+$username = trim($_POST['nom'] ?? '');
+$password = $_POST['mdp'] ?? '';
+
+if ($username === '' || $password === '') {
+    header('Location: ../login.php?error=invalid_credentials');
+    exit;
+}
+
+if (attempt_login($pdo, $username, $password)) {
     header('Location: ../index.php');
     exit;
 }
