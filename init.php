@@ -13,4 +13,7 @@ $pdo->exec("INSERT IGNORE INTO users (username, password)
 VALUES ('Farid', 'Farid')
 ");
 
+/*
 echo 'Base quizDB initialisée !';
+*/
+?>

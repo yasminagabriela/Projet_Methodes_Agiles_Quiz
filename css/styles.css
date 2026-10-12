@@ -487,3 +487,10 @@ body.dark-mode {
 .dark-mode .submitted {
     background-color: #38331f;
 }
+
+.error-text {
+    color: rgb(145, 0, 0);
+    font-size: 14px;
+    padding: 10px;
+    margin-top: 5px;
+}
