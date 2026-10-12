@@ -12,7 +12,15 @@
 
 <body>
 
-    <?php include __DIR__ . '/includes/header.php'; ?>
+    <?php include __DIR__ . '/includes/header.php'; 
+
+    //pour envoyer vers l'accueil quelqun qui est déja connecté mais qui est allé sur le login.php
+    require_once __DIR__ . '/includes/auth.php';
+    if (is_logged_in()) {
+        header('Location: index.php');
+    exit;
+    }
+    ?>
 
     <div class="container">
         <div class="content">

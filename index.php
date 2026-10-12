@@ -9,11 +9,14 @@
     </head>
 
     <body>
-    <?php include __DIR__ . '/includes/header.php'; ?>
+    <?php include __DIR__ . '/includes/header.php'; 
+    require_once __DIR__ . '/includes/auth.php';
+    require_login();
+    ?>
 
         <div class="dashboard-user">
             <span class="current-user">Professeur</span>
-            <button type="button" class="deconnecter" onclick="window.location.href='login.php'">Se déconnecter</button>
+            <button type="button" class="deconnecter" onclick="window.location.href='logout.php'">Se déconnecter</button>
         </div>
 
         <main class="dashboard-content">
