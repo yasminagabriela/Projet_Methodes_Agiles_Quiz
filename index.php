@@ -1,13 +1,14 @@
 <?php
 require_once __DIR__ . '/includes/auth.php';
 require_login();
+$titreRole = (($_SESSION['role'] ?? '') === 'enseignant') ? 'Professeur' : 'Étudiant';
 ?>
 <!DOCTYPE html>
 <html lang="fr">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Quivvi</title>
+        <title>Qivvi</title>
         <link rel="stylesheet" href="css/styles.css">
         <link rel="icon" type="image/png" href="images/icon.png">
     </head>
@@ -17,13 +18,13 @@ require_login();
     ?>
 
         <div class="dashboard-user">
-            <span class="current-user">Professeur</span>
+            <span class="current-user"><?= $titreRole; ?></span>
             <button type="button" class="deconnecter" onclick="window.location.href='logout.php'">Se déconnecter</button>
         </div>
 
         <main class="dashboard-content">
             <section class="dashboard-banner">
-                <h1>Bonjour, Professeur</h1>
+                <h1>Bonjour, <?= htmlspecialchars($_SESSION['username']); ?></h1>
                 <p>Créez vos quiz, publiez-les et suivez les résultats de vos étudiants.</p>
 
                 <form class="quiz-form">
