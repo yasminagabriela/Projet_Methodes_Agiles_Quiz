@@ -12,9 +12,9 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-function attempt_login(PDO $pdo, string $username, string $password): bool {
-    $stmt = $pdo->prepare('SELECT id, username, password FROM users WHERE username = ?');
-    $stmt->execute([$username]);
+function attempt_login(PDO $pdo, string $username, string $password, string $role): bool {
+    $stmt = $pdo->prepare('SELECT id, username, password, role FROM users WHERE username = ? AND role = ?');
+    $stmt->execute([$username, $role]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$user) {
@@ -35,6 +35,7 @@ function attempt_login(PDO $pdo, string $username, string $password): bool {
         session_regenerate_id(true);   // évite la fixation de session
         $_SESSION['user_id']  = $user['id'];
         $_SESSION['username'] = $user['username'];
+        $_SESSION['role']	  = $user['role'];
     }
     return $ok;
 }
