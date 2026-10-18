@@ -16,7 +16,6 @@ if (!$colonne) {
     $pdo->exec("UPDATE users SET role = 'enseignant' WHERE username = 'Farid'");
 }
 
-$pdo->exec("INSERT IGNORE INTO users (username, password, role)
-VALUES ('Farid', 'Farid', 'enseignant')
-");
+$hash = password_hash('Farid', PASSWORD_DEFAULT);
+$pdo->prepare("INSERT IGNORE INTO users (username, password, role) VALUES ('Farid', ?, 'enseignant')")->execute([$hash]);
 ?>

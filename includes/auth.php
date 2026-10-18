@@ -21,15 +21,7 @@ function attempt_login(PDO $pdo, string $username, string $password, string $rol
         return false;
     }
 
-    $ok = false;
-    if (password_verify($password, $user['password'])) {
-        $ok = true;
-    } elseif (hash_equals($user['password'], $password)) {
-        // Ancien mot de passe en clair : on l'accepte, puis on le convertit en hash
-        $ok = true;
-        $upd = $pdo->prepare('UPDATE users SET password = ? WHERE id = ?');
-        $upd->execute([password_hash($password, PASSWORD_DEFAULT), $user['id']]);
-    }
+    $ok = password_verify($password, $user['password']);
 
     if ($ok) {
         session_regenerate_id(true);   // évite la fixation de session
