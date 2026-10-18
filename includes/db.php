@@ -1,15 +1,13 @@
 <?php
-// Connexion à la base de données EN LIGNE
-$serveur       = 'sql107.infinityfree.com';
-$baseDeDonnees = 'if0_43203796_qivvi';
-$utilisateur   = 'if0_43203796';
-$motDePasse    = 'W0rkFri3nds';
-
 // Connexion à la base de données LOCALE
-// $serveur = 'localhost';
-// $baseDeDonnees = 'quizbd';
-// $utilisateur = 'root';
-// $motDePasse = '';
+$serveur       = 'localhost';
+$baseDeDonnees = 'quizbd';
+$utilisateur   = 'root';
+$motDePasse    = '';
+
+if (file_exists(__DIR__ . '/db_online.php')) {
+    require __DIR__ . '/db_online.php';
+}
 
 try {
     $pdo = new PDO("mysql:host=$serveur;dbname=$baseDeDonnees;charset=utf8mb4", $utilisateur, $motDePasse);
