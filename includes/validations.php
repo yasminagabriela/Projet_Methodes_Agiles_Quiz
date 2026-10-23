@@ -18,7 +18,7 @@ if ($role !== 'etudiant' && $role !== 'enseignant') {
     exit;
 }
 
-if ($username === '' || $password === '') {
+if ($username === '' || $password === '') { 
     header('Location: ../login.php?error=invalid_credentials');
     exit;
 }

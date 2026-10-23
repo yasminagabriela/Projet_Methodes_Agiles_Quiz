@@ -9,75 +9,71 @@ exit;
 
 <!DOCTYPE html>
 <html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Quivvi</title>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quivvi</title>
+        <link rel="stylesheet" href="css/styles.css">
+        <link rel="icon" type="image/png" href="images/icon.png">
+    </head>
+    <body>
+        <?php include __DIR__ . '/includes/header.php'; ?>
 
-    <link rel="stylesheet" href="css/styles.css">
-    <link rel="icon" type="image/png" href="images/icon.png">
-</head>
+        <div class="container">
+            <div class="content">
 
-<body>
+                <div class="login-box">
+                    <h1>Bienvenue !</h1>
+                    <p>Connectez-vous pour accéder à Quivvi</p>
 
-    <?php include __DIR__ . '/includes/header.php'; 
-    ?>
+                    <form action="includes/validations.php" method="post">
 
-    <div class="container">
-        <div class="content">
+                        <label>Vous êtes</label>
 
-            <div class="login-box">
-                <h1>Bienvenue !</h1>
-                <p>Connectez-vous pour accéder à Quivvi</p>
+                        <div class="role-selection">
 
-                <form action="includes/validations.php" method="post">
+                            <label class="role-option selected" id="etudiant-label">
+                                <input type="radio" name="role" value="etudiant" checked>
+                                Étudiant
+                            </label>
 
-                    <label>Vous êtes</label>
+                            <label class="role-option" id="enseignant-label">
+                                <input type="radio" name="role" value="enseignant">
+                                Enseignant
+                            </label>
 
-                    <div class="role-selection">
+                        </div>
 
-                        <label class="role-option selected" id="etudiant-label">
-                            <input type="radio" name="role" value="etudiant" checked>
-                            Étudiant
-                        </label>
+                        <label for="nom">Nom</label>
+                        <input type="text" id="nom" name="nom" placeholder="Entrez votre nom"required>
 
-                        <label class="role-option" id="enseignant-label">
-                            <input type="radio" name="role" value="enseignant">
-                            Enseignant
-                        </label>
+                        <label for="mdp">Mot de passe</label>
+                        <input type="password" id="mdp" name="mdp" placeholder="Entrez votre mot de passe" required>
 
-                    </div>
+                        <?php if (isset($_GET['error']) && $_GET['error'] === 'invalid_credentials'): ?>
+                            <p class="error-text">
+                                Votre nom d'utilisateur ou mot de passe n'est pas valide.
+                            </p>
+                        <?php endif; ?>
 
-                    <label for="nom">Nom</label>
-                    <input type="text" id="nom" name="nom" placeholder="Entrez votre nom"required>
+                        <button class="connecter" type="submit">
+                            Connexion
+                        </button>
 
-                    <label for="mdp">Mot de passe</label>
-                    <input type="password" id="mdp" name="mdp" placeholder="Entrez votre mot de passe" required>
+                    </form>
+                </div>
 
-                    <?php if (isset($_GET['error']) && $_GET['error'] === 'invalid_credentials'): ?>
-                        <p class="error-text">
-                            Votre nom d'utilisateur ou mot de passe n'est pas valide.
-                        </p>
-                    <?php endif; ?>
-
-                    <button class="connecter" type="submit">
-                        Connexion
-                    </button>
-
-                </form>
             </div>
 
+            <div class="image_container">
+                <img class="right_image" src="images/background.jpg" alt="Background">
+            </div>
         </div>
 
-        <div class="image_container">
-            <img class="right_image" src="images/background.jpg" alt="Background">
-        </div>
-    </div>
+        <?php include __DIR__ . '/includes/footer.php'; ?>
 
-    <?php include __DIR__ . '/includes/footer.php'; ?>
+        <script src="js/script.js"></script>
 
-    <script src="js/script.js"></script>
-
-</body>
+    </body>
 </html>

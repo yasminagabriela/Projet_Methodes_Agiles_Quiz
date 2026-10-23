@@ -3,6 +3,7 @@ require_once __DIR__ . '/includes/auth.php';
 require_login();
 $titreRole = (($_SESSION['role'] ?? '') === 'enseignant') ? 'Professeur' : 'Étudiant(e)';
 ?>
+
 <!DOCTYPE html>
 <html lang="fr">
     <head>
@@ -13,9 +14,8 @@ $titreRole = (($_SESSION['role'] ?? '') === 'enseignant') ? 'Professeur' : 'Étu
         <link rel="icon" type="image/png" href="images/icon.png">
     </head>
 
-    <body>
-    <?php include __DIR__ . '/includes/header.php'; 
-    ?>
+    <body>    
+    <?php include __DIR__ . '/includes/header.php'; ?>
 
         <div class="dashboard-user">
             <span class="current-user"><?= $titreRole; ?></span>
@@ -27,8 +27,8 @@ $titreRole = (($_SESSION['role'] ?? '') === 'enseignant') ? 'Professeur' : 'Étu
                 <h1>Bonjour, <?= htmlspecialchars($_SESSION['username']); ?></h1>
                 <p>Créez vos quiz, publiez-les et suivez les résultats de vos étudiants.</p>
 
-                <form class="quiz-form">
-                    <input type="text" placeholder="Titre du nouveau quiz">
+                <form class="quiz-form" action="quiz.php" methode="post">
+                    <input type="text" name="title" placeholder="Titre du nouveau quiz">
                     <button type="submit">Créer un quiz</button>
                 </form>
             </section>

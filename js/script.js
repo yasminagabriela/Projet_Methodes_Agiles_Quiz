@@ -41,3 +41,5 @@ enseignant.addEventListener("click", function() {
         error.style.display = "none";
     }
 });
+
+/*  */
