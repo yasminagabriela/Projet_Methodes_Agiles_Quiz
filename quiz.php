@@ -70,7 +70,7 @@
             <!-- Onglets -->
             <div class="quiz-tabs">
                 <button type="button" class="active">Questions (0)</button>
-                <button type="button">Résultats</button>
+                <button type="button" onclick="window.location.href='appercuQuiz.php<?= isset($_GET['id']) ? '?id=' . (int)$_GET['id'] : '' ?>'">Résultats</button>
             </div>
 
             <!-- Questions -->
