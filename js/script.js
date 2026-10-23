@@ -42,4 +42,18 @@ enseignant.addEventListener("click", function() {
     }
 });
 
-/*  */
+/* calling the api */
+
+async function envoyerQuiz(quiz) {
+    const res = await fetch('includes/api.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(quiz),
+    });
+    const result = await res.json();
+    if (!res.ok) {
+        console.error(result.erreur);
+        return null;
+    }
+    return result.id;
+}
