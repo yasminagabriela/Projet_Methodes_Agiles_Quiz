@@ -26,4 +26,18 @@ const enseignant = document.getElementById("enseignant-label");
         etudiant.classList.remove("selected");
     });
 
-/* Connexion */
+
+    /* Enlever le text "Erreur de validation" quand on switch de role */
+const error = document.querySelector(".error-text");
+
+etudiant.addEventListener("click", function() {
+    if (error) {
+        error.style.display = "none";
+    }    
+});
+
+enseignant.addEventListener("click", function() {
+    if (error) {
+        error.style.display = "none";
+    }
+});
