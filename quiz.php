@@ -12,6 +12,12 @@
         <!-- HEADER -->
         <?php include __DIR__ . '/includes/header.php'; ?>
 
+        <!-- Nom de l'utilisateur + bouton de deconnexion -->
+        <div class="dashboard-user">
+            <span class="current-user"><?= $titreRole; ?></span>
+            <button type="button" class="deconnecter" onclick="window.location.href='logout.php'">Se déconnecter</button>
+        </div>
+
         <!-- Les details du quiz -->
         <main class="quiz-details">
             <!-- Banniere du quiz -->

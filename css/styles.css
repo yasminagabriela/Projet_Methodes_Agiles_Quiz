@@ -168,7 +168,7 @@ select {
     width: 40px;
     height: 40px;
     object-fit: contain;
-    filter: brightness(0) saturate(100%) invert(65%) sepia(12%) saturate(600%) hue-rotate(290deg);
+    filter: brightness(0) saturate(100%) invert(65%) sepia(12%) saturate(600%) hue-rotate(290deg); /* On peut pas changer la couleur du logo avec : background-color... */
 }
 
 
@@ -564,9 +564,6 @@ body.dark-mode {
     background-image: url("../images/light-banner.png");
 }
 
-.dark-mode .quiz-banner {
-    background-image: url("../images/dark-banner.png");
-}
 
 .quiz-banner-top {
     display: flex;
@@ -585,7 +582,13 @@ body.dark-mode {
     text-decoration: none;
     border-radius: 25px;
     padding: 10px 16px;
+    transition: background-color 0.3s;
 }
+
+.quiz-banner .return:hover {
+    background-color: #ffffff;
+}
+
 
 .quiz-banner .delete {
     background: transparent;
@@ -657,8 +660,29 @@ body.dark-mode {
 }
 
 .quiz-options summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    list-style: none;
     cursor: pointer;
     font-weight: 500;
+}
+
+/* La petite fleche pour ouvrir les parametres du quiz */
+.quiz-options summary::after { /* after cest pour le mettre apres le text */
+    content: "";
+    width: 12px;
+    height: 12px;
+    border-right: 3px solid #b7a8b4;
+    border-bottom: 3px solid #b7a8b4;
+    transform: rotate(45deg);
+    margin-right: 8px;
+}
+
+/* fleche vers le haut quand les parametres sont ouvert */
+.quiz-options[open] summary::after { /* quand cest ouvert */
+    transform: rotate(225deg);
 }
 
 .quiz-options form {
@@ -768,4 +792,73 @@ body.dark-mode {
     object-fit: cover;
     border-radius: 50%;
     margin-bottom: 5px;
+}
+
+/* Dark Mode de la page quiz.php */
+.dark-mode .quiz-banner {
+    background-image: url("../images/dark-banner.png");
+}
+
+.dark-mode .quiz-banner .return, 
+.dark-mode .quiz-badges span,
+.dark-mode .quiz-publication {
+    background-color: #221a1e;
+    color: #f4ecef;
+}
+
+.dark-mode .quiz-banner .return {
+    transition: background-color 0.3s;
+}
+.dark-mode .quiz-banner .return:hover {
+    background-color: #171214;
+}
+
+.dark-mode .quiz-publication {
+    background-color: #33262c;
+}
+
+.dark-mode .quiz-publication h3 {
+    color: #f4ecef;
+}
+
+.dark-mode .quiz-publication p {
+    color: #b3a6ad;
+}
+
+.dark-mode .quiz-options {
+    background-color: #221a1e;
+    border: 1px solid #3a2d33;
+    color: #f4ecef;
+}
+
+.dark-mode .quiz-options textarea {
+    border: 1px solid #444;
+}
+
+.dark-mode .quiz-options textarea:focus {
+    border: 1px solid #b5879d;
+}
+
+.dark-mode .quiz-tabs {
+    background-color: #2d2227;
+}
+
+
+.dark-mode .questions-empty {
+    background-color: #33262c;
+}
+
+.dark-mode .questions-empty h3 {
+    color: #f4ecef;
+}
+
+.dark-mode .questions-empty p {
+    color: #b3a6ad;
+}
+
+.dark-mode .quiz-publication button,
+.dark-mode .quiz-options form,
+.dark-mode .quiz-options button,
+.dark-mode .quiz-tabs .active {
+    color: #1a1014;
 }
