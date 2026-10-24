@@ -88,7 +88,7 @@ foreach ($questions as $i => $q) {
         if ($texte === '' || mb_strlen($texte) > 255) {
             repondre(400, ['erreur' => "Question $num : chaque réponse doit avoir un texte (255 caractères max)"]);
         }
-        if (($r['est_correct'] ?? false) === true) {
+        if (($r['est_correcte'] ?? false) === true) {
             $nbCorrectes++;
         }
     }
@@ -110,14 +110,14 @@ try {
 
     // Prepared once, executed in the loops
     $stmtQuestion = $pdo->prepare('INSERT INTO questions (enonce, type, quiz_id) VALUES (?, ?, ?)');
-    $stmtReponse  = $pdo->prepare('INSERT INTO reponses (texte, est_correct, question_id) VALUES (?, ?, ?)');
+    $stmtReponse  = $pdo->prepare('INSERT INTO reponses (texte, est_correcte, question_id) VALUES (?, ?, ?)');
 
     foreach ($questions as $q) {
         $stmtQuestion->execute([trim($q['enonce']), $q['type'], $quizId]);
         $questionId = $pdo->lastInsertId();
 
         foreach ($q['reponses'] as $r) {
-            $estCorrect = ($r['est_correct'] ?? false) === true ? 1 : 0;
+            $estCorrect = ($r['est_correcte'] ?? false) === true ? 1 : 0;
             $stmtReponse->execute([trim($r['texte']), $estCorrect, $questionId]);
         }
     }
