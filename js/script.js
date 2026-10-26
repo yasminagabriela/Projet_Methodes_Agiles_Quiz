@@ -2,45 +2,43 @@
 const boutonTheme = document.getElementById("theme-toggle");
 const imageTheme = boutonTheme.querySelector("img");
 
-boutonTheme.addEventListener("click", function() {
-    document.body.classList.toggle("dark-mode");
 
-        if (document.body.classList.contains("dark-mode")) {
-            imageTheme.src = "images/light-mode.png";
-        } else {
-            imageTheme.src = "images/dark-mode.png";
-        }
-    });
+// Appliquer le thème
+function appliquerTheme(sombre) {
+    document.body.classList.toggle("dark-mode", sombre);
+    imageTheme.src = sombre ? "images/light-mode.png" : "images/dark-mode.png";
+}
 
-/* Choix de role etudiant/enseignant */
+// Au charement : reprendre le thème sauvegardé
+appliquerTheme(localStorage.getItem("theme") === "dark");
+
+
+// Au clic : changer le thème et le sauvegarder
+boutonTheme.addEventListener("click", function () {
+    const sombre = !document.body.classList.contains("dark-mode");
+    appliquerTheme(sombre);
+    localStorage.setItem("theme", sombre ? "dark" : "light");
+});
+
+/* Choix de role etudiant/enseignant sur la page de login */
 const etudiant = document.getElementById("etudiant-label");
 const enseignant = document.getElementById("enseignant-label");
-
-    etudiant.addEventListener("click", function() {
-        etudiant.classList.add("selected");
-        enseignant.classList.remove("selected");
-    });
-
-    enseignant.addEventListener("click", function() {
-        enseignant.classList.add("selected");
-        etudiant.classList.remove("selected");
-    });
-
-
-    /* Enlever le text "Erreur de validation" quand on switch de role */
 const error = document.querySelector(".error-text");
 
-etudiant.addEventListener("click", function() {
-    if (error) {
-        error.style.display = "none";
-    }    
-});
+if (etudiant && enseignant) {
+    etudiant.addEventListener("click", function () {
+        etudiant.classList.add("selected");
+        enseignant.classList.remove("selected");
+        // Enlever le text "Erreur de validation" quand on switch de role
+        if (error) error.style.display = "none";
+    });
 
-enseignant.addEventListener("click", function() {
-    if (error) {
-        error.style.display = "none";
-    }
-});
+    enseignant.addEventListener("click", function () {
+        enseignant.classList.add("selected");
+        etudiant.classList.remove("selected");
+        if (error) error.style.display = "none";
+    });
+}
 
 /* calling the api */
 
