@@ -2,7 +2,7 @@
     <div class="footer-container">
 
         <div class="footer-brand">
-            <img src="images/logo.png" alt="Qivvi">
+            <img src="images/qivvi-logo.png" alt="Qivvi">
         </div>
         <div class="footer-column">
             <h4>Qivvi</h4>
@@ -25,7 +25,7 @@
             <p>Sara Belhadj</p>
             <p>Talyssa Lydie Lacombe</p>
             <p>Yasmina Cabrera</p>
-            <p>Latortue-Raymond Jaynelle</p>
+            <p>Jaynelle Latortue</p>
         </div>
 
     </div>

@@ -12,29 +12,22 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-function attempt_login(PDO $pdo, string $username, string $password): bool {
-    $stmt = $pdo->prepare('SELECT id, username, password FROM users WHERE username = ?');
-    $stmt->execute([$username]);
+function attempt_login(PDO $pdo, string $username, string $password, string $role): bool {
+    $stmt = $pdo->prepare('SELECT id, username, password, role FROM users WHERE username = ? AND role = ?');
+    $stmt->execute([$username, $role]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$user) {
         return false;
     }
 
-    $ok = false;
-    if (password_verify($password, $user['password'])) {
-        $ok = true;
-    } elseif (hash_equals($user['password'], $password)) {
-        // Ancien mot de passe en clair : on l'accepte, puis on le convertit en hash
-        $ok = true;
-        $upd = $pdo->prepare('UPDATE users SET password = ? WHERE id = ?');
-        $upd->execute([password_hash($password, PASSWORD_DEFAULT), $user['id']]);
-    }
+    $ok = password_verify($password, $user['password']);
 
     if ($ok) {
         session_regenerate_id(true);   // évite la fixation de session
         $_SESSION['user_id']  = $user['id'];
         $_SESSION['username'] = $user['username'];
+        $_SESSION['role']	  = $user['role'];
     }
     return $ok;
 }

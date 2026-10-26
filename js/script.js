@@ -26,4 +26,34 @@ const enseignant = document.getElementById("enseignant-label");
         etudiant.classList.remove("selected");
     });
 
-/* Connexion */
+
+    /* Enlever le text "Erreur de validation" quand on switch de role */
+const error = document.querySelector(".error-text");
+
+etudiant.addEventListener("click", function() {
+    if (error) {
+        error.style.display = "none";
+    }    
+});
+
+enseignant.addEventListener("click", function() {
+    if (error) {
+        error.style.display = "none";
+    }
+});
+
+/* calling the api */
+
+async function envoyerQuiz(quiz) {
+    const res = await fetch('includes/api.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(quiz),
+    });
+    const result = await res.json();
+    if (!res.ok) {
+        console.error(result.erreur);
+        return null;
+    }
+    return result.id;
+}

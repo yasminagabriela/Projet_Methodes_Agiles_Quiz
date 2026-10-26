@@ -1,6 +1,6 @@
 <!-- Logo du site -->
 <a href="index.php" class="logo">
-    <img src="images/logo.png" alt="Qivvi">
+    <img src="images/qivvi-logo.png" alt="Qivvi">
 </a>
 
 <!-- Switch dark/light mode -->

@@ -1,0 +1,2 @@
+# Ignorer certains dossiers et fichiers
+includes/db_online.php
