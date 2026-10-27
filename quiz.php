@@ -88,6 +88,42 @@ $titreRole = (($_SESSION['role'] ?? '') === 'enseignant') ? 'Professeur' : 'Étu
                 <p>Ajoutez votre première question pour construire le quiz.</p>
             </div>
 
+            <!-- Les questions ajoutées apparaissent ici -->
+            <div id="questions-list"></div>
+
+            <!-- Modèle d'une question (invisible, copié par le JS) -->
+            <template id="question-template">
+                <div class="question-block">
+                    <div class="question-header">
+                        <h4>Question <span class="q-numero"></span></h4>
+                        <button type="button" class="q-supprimer">Supprimer</button>
+                    </div>
+
+                    <label>Énoncé</label>
+                    <input type="text" class="q-enonce" placeholder="Écrivez votre question...">
+
+                    <label>Type</label>
+                    <select class="q-type">
+                        <option value="choix_multiple">Choix multiple</option>
+                        <option value="vrai_faux">Vrai / Faux</option>
+                    </select>
+
+                    <label>Réponses (cochez la ou les bonnes réponses)</label>
+                    <div class="q-reponses"></div>
+
+                    <button type="button" class="q-ajouter-reponse">+ Ajouter une réponse</button>
+                </div>
+            </template>
+
+            <!-- Modèle d'une réponse -->
+            <template id="reponse-template">
+                <div class="reponse-row">
+                    <input type="checkbox" class="r-correcte" title="Bonne réponse">
+                    <input type="text" class="r-texte" placeholder="Réponse">
+                    <button type="button" class="r-supprimer" title="Supprimer la réponse">✕</button>
+                </div>
+            </template>
+
             <button type="button" class="add-question">
                 + Ajouter une question
             </button>
