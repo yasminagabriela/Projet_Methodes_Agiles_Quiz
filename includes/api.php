@@ -5,7 +5,8 @@ require_once __DIR__ . '/auth.php';
 header('Content-Type: application/json; charset=utf-8');
 
 // Small helper, like res.status(code).json(data)
-function repondre(int $code, array $data): void {
+function repondre(int $code, array $data): void
+{
     http_response_code($code);
     echo json_encode($data);
     exit;

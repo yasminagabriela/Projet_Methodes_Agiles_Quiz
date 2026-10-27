@@ -7,9 +7,9 @@ require_login();
 $titreRole = (($_SESSION['role'] ?? '') === 'enseignant') ? 'Professeur' : 'Étudiant(e)';
 ?>
 
-
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,20 +17,17 @@ $titreRole = (($_SESSION['role'] ?? '') === 'enseignant') ? 'Professeur' : 'Étu
     <link rel="stylesheet" href="css/styles.css">
     <link rel="icon" type="image/png" href="images/icon.png">
 </head>
-    <body>
-        <!-- HEADER -->
-        <?php include __DIR__ . '/includes/header.php'; ?>
+
+<body>
+    <!-- HEADER -->
+    <?php include __DIR__ . '/includes/header.php'; ?>
 
 
-
-
-        <!-- Nom de l'utilisateur + bouton de deconnexion -->
-        <div class="dashboard-user">
-            <span class="current-user"><?= $titreRole; ?></span>
-            <button type="button" class="deconnecter" onclick="window.location.href='logout.php'">Se déconnecter</button>
-        </div>
-
-
+    <!-- Nom de l'utilisateur + bouton de deconnexion -->
+    <div class="dashboard-user">
+        <span class="current-user"><?= $titreRole; ?></span>
+        <button type="button" class="deconnecter" onclick="window.location.href='logout.php'">Se déconnecter</button>
+    </div>
 
 
     <main class="quiz-details">
@@ -42,7 +39,7 @@ $titreRole = (($_SESSION['role'] ?? '') === 'enseignant') ? 'Professeur' : 'Étu
                 <a href="index.php" class="return">‹ Mes quiz</a>
             </div>
 
-            <h2 style="color: black;">Aperçu des quiz</h2>
+            <h2 class="quiz-title">Aperçu des quiz</h2>
         </section>
 
         <!-- Onglets -->
@@ -67,8 +64,8 @@ $titreRole = (($_SESSION['role'] ?? '') === 'enseignant') ? 'Professeur' : 'Étu
         </section>
     </main>
 
-<script src="js/script.js"></script>
-
+    <script src="js/script.js"></script>
 
 </body>
+
 </html>
