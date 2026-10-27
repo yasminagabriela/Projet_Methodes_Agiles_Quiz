@@ -155,4 +155,3 @@ if (!$stmt->fetch()) {
         throw $e;   // on relance l'erreur pour la voir au lieu de l'avaler en silence
     }
 }
-?>
