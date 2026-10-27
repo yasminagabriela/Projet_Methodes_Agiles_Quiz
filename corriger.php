@@ -29,15 +29,9 @@ foreach ($questions as $q) {
 ?>
 <!DOCTYPE html>
 <html lang="fr">
-
-<head>
-    <meta charset="UTF-8">
-    <title>Résultat</title>
-</head>
-
+<head><meta charset="UTF-8"><title>Résultat</title></head>
 <body>
     <h1>Résultat : <?= $score ?> / <?= count($questions) ?></h1>
     <a href="test_quiz.php">Recommencer</a>
 </body>
-
 </html>

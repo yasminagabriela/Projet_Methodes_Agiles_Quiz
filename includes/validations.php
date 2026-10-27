@@ -11,14 +11,14 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 $username = trim($_POST['nom'] ?? '');
 $password = $_POST['mdp'] ?? '';
-$role      = $_POST['role'] ?? 'etudiant';
+$role	  = $_POST['role']?? 'etudiant';
 
 if ($role !== 'etudiant' && $role !== 'enseignant') {
     header('Location: ../login.php?error=invalid_credentials');
     exit;
 }
 
-if ($username === '' || $password === '') {
+if ($username === '' || $password === '') { 
     header('Location: ../login.php?error=invalid_credentials');
     exit;
 }
@@ -30,3 +30,5 @@ if (attempt_login($pdo, $username, $password, $role)) {
 
 header('Location: ../login.php?error=invalid_credentials&role=' . $role);
 exit;
+
+?>

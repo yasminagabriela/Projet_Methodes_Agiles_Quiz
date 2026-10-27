@@ -5,15 +5,14 @@ if (session_status() === PHP_SESSION_NONE) {
     session_set_cookie_params([
         'lifetime' => 0,               // le cookie disparaît à la fermeture du navigateur
         'path'     => '/',
-        'httponly' => true,
+        'httponly' => true,            
         'samesite' => 'Lax',
         'secure'   => !empty($_SERVER['HTTPS']),
     ]);
     session_start();
 }
 
-function attempt_login(PDO $pdo, string $username, string $password, string $role): bool
-{
+function attempt_login(PDO $pdo, string $username, string $password, string $role): bool {
     $stmt = $pdo->prepare('SELECT id, username, password, role FROM users WHERE username = ? AND role = ?');
     $stmt->execute([$username, $role]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -28,26 +27,23 @@ function attempt_login(PDO $pdo, string $username, string $password, string $rol
         session_regenerate_id(true);   // évite la fixation de session
         $_SESSION['user_id']  = $user['id'];
         $_SESSION['username'] = $user['username'];
-        $_SESSION['role']      = $user['role'];
+        $_SESSION['role']	  = $user['role'];
     }
     return $ok;
 }
 
-function is_logged_in(): bool
-{
+function is_logged_in(): bool {
     return !empty($_SESSION['user_id']);
 }
 
-function require_login(): void
-{
+function require_login(): void {
     if (!is_logged_in()) {
         header('Location: login.php');
         exit;
     }
 }
 
-function logout(): void
-{
+function logout(): void {
     $_SESSION = [];
     if (ini_get('session.use_cookies')) {
         $p = session_get_cookie_params();

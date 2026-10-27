@@ -12,6 +12,7 @@ if (file_exists(__DIR__ . '/db_online.php')) {
 try {
     $pdo = new PDO("mysql:host=$serveur;dbname=$baseDeDonnees;charset=utf8mb4", $utilisateur, $motDePasse);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
+} 
+catch (PDOException $e) {
     exit('Connexion impossible : ' . $e->getMessage());
 }

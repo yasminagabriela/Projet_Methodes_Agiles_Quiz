@@ -14,12 +14,7 @@ $stmtRep = $pdo->prepare("SELECT * FROM reponses WHERE question_id = ? ORDER BY 
 ?>
 <!DOCTYPE html>
 <html lang="fr">
-
-<head>
-    <meta charset="UTF-8">
-    <title><?= htmlspecialchars($quiz['titre']) ?></title>
-</head>
-
+<head><meta charset="UTF-8"><title><?= htmlspecialchars($quiz['titre']) ?></title></head>
 <body>
     <h1><?= htmlspecialchars($quiz['titre']) ?></h1>
     <p><?= htmlspecialchars($quiz['description']) ?></p>
@@ -27,7 +22,7 @@ $stmtRep = $pdo->prepare("SELECT * FROM reponses WHERE question_id = ? ORDER BY 
     <form method="post" action="corriger.php">
         <input type="hidden" name="quiz_id" value="<?= $quiz['id'] ?>">
 
-        <?php foreach ($questions as $i => $q): ?>
+            <?php foreach ($questions as $i => $q): ?>
             <?php
             $stmtRep->execute([$q['id']]);
             $reponses = $stmtRep->fetchAll();
@@ -42,8 +37,8 @@ $stmtRep = $pdo->prepare("SELECT * FROM reponses WHERE question_id = ? ORDER BY 
                 <?php foreach ($reponses as $r): ?>
                     <label>
                         <input type="<?= $typeInput ?>"
-                            name="reponses[<?= $q['id'] ?>][]"
-                            value="<?= $r['id'] ?>">
+                               name="reponses[<?= $q['id'] ?>][]"
+                               value="<?= $r['id'] ?>">
                         <?= htmlspecialchars($r['texte']) ?>
                     </label><br>
                 <?php endforeach; ?>
@@ -53,5 +48,4 @@ $stmtRep = $pdo->prepare("SELECT * FROM reponses WHERE question_id = ? ORDER BY 
         <button type="submit">Soumettre</button>
     </form>
 </body>
-
 </html>
