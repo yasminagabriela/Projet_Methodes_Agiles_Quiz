@@ -23,6 +23,19 @@ boutonTheme.addEventListener("click", function () {
 /* Choix de role etudiant/enseignant sur la page de login */
 const etudiant = document.getElementById("etudiant-label");
 const enseignant = document.getElementById("enseignant-label");
+
+    etudiant.addEventListener("click", function() {
+        etudiant.classList.add("selected");
+        enseignant.classList.remove("selected");
+    });
+
+    enseignant.addEventListener("click", function() {
+        enseignant.classList.add("selected");
+        etudiant.classList.remove("selected");
+    });
+
+
+/* Enlever le text "Erreur de validation" quand on switch de role */
 const error = document.querySelector(".error-text");
 
 if (etudiant && enseignant) {
@@ -54,4 +67,23 @@ async function envoyerQuiz(quiz) {
         return null;
     }
     return result.id;
+};
+
+/* Ajouter une question */
+const btnAddQuestion = document.getElementById("btn-add-question");
+const btnCancel = document.getElementById("btn-cancel");
+
+const questionsEmpty = document.getElementById("questions-empty");
+const questionForm = document.getElementById("question-form");
+
+if (btnAddQuestion && btnCancel && questionsEmpty && questionForm) {
+    btnAddQuestion.addEventListener("click", function () {
+        questionsEmpty.hidden = true;
+        questionForm.hidden = false;
+    });
+
+    btnCancel.addEventListener("click", function () {
+        questionForm.hidden = true;
+        questionsEmpty.hidden = false;
+    });
 }
