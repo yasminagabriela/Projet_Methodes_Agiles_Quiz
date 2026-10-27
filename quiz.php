@@ -2,6 +2,7 @@
 require_once __DIR__ . '/includes/auth.php';
 require_login();
 $titreRole = (($_SESSION['role'] ?? '') === 'enseignant') ? 'Professeur' : 'Étudiant(e)';
+$title = trim($_POST['title'] ?? '');
 ?>
 
 <!DOCTYPE html>
@@ -34,7 +35,7 @@ $titreRole = (($_SESSION['role'] ?? '') === 'enseignant') ? 'Professeur' : 'Étu
                 <button type="button" class="delete">Supprimer le quiz</button>
             </div>
 
-            <h1><?= htmlspecialchars($title ?? '') ?></h1>
+            <h1><?= htmlspecialchars($title) ?></h1>
 
             <div class="quiz-badges">
                 <span>Brouillon</span>
