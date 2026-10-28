@@ -152,24 +152,20 @@ $title = trim($_POST['title'] ?? '');
             <!-- Modèle d'une question : utilisé par le JS -->
             <template id="question-template">
                 <div class="question-block">
+
                     <div class="question-header">
-                        <h4>Question <span class="q-numero"></span></h4>
+                        <span class="q-numero"></span>
+                        <h4 class="q-enonce"></h4>
+                        <span class="q-type"></span>
+                    </div>
+
+                    <div class="q-reponses"></div>
+
+                    <div class="question-actions">
+                        <button type="button" class="q-modifier">Modifier</button>
                         <button type="button" class="q-supprimer">Supprimer</button>
                     </div>
 
-                    <label>Énoncé</label>
-                    <input type="text" class="q-enonce" placeholder="Écrivez votre question...">
-
-                    <label>Type</label>
-                    <select class="q-type">
-                        <option value="choix_multiple">Choix multiple</option>
-                        <option value="vrai_faux">Vrai / Faux</option>
-                    </select>
-
-                    <label>Réponses (cochez la ou les bonnes réponses)</label>
-                    <div class="q-reponses"></div>
-
-                    <button type="button" class="q-ajouter-reponse">+ Ajouter une réponse</button>
                 </div>
             </template>
 
@@ -189,7 +185,7 @@ $title = trim($_POST['title'] ?? '');
 
 
 
-    <script src="js/script.js?v=2"></script>
+    <script src="js/script.js?v=3"></script>
 </body>
 
 </html>

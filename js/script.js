@@ -62,6 +62,81 @@ const listeQuestions = document.getElementById("questions-list");
 const templateQuestion = document.getElementById("question-template");
 const templateReponse = document.getElementById("reponse-template");
 
+const boutonSauvegarder = document.getElementById("new-save-question");
+
+if (boutonSauvegarder) {
+    boutonSauvegarder.addEventListener("click", function () {
+        const enonce = document.getElementById("new-question-text").value.trim();
+        const type = document.querySelector(".question-types button.selected").dataset.type;
+
+        if (enonce === "") {
+            alert("Veuillez écrire une question.");
+            return;
+        }
+        const champsReponses = document.querySelectorAll("#new-question-answers .new-answer-text");
+        for (const champ of champsReponses) {
+            if (champ.value.trim() === "") {
+                alert("Veuillez remplir toutes les réponses.");
+                return;
+            }
+        }
+        console.log(enonce);
+        console.log(type);
+
+        // Copier le modèle de question
+        const question = templateQuestion.content.cloneNode(true);
+        // Ajouter l'énoncé
+        question.querySelector(".q-enonce").textContent = enonce;
+        // Ajouter le type
+        question.querySelector(".q-type").textContent =
+            type === "choix_multiple" ? "QCM" : "Vrai/Faux";
+
+        // Récupérer les réponses du formulaire
+        const reponses = document.querySelectorAll("#new-question-answers .new-answer-row");
+        const conteneurReponses = question.querySelector(".q-reponses");
+
+        reponses.forEach(function (reponse, index) {
+            const texte = reponse.querySelector(".new-answer-text").value;
+            const correcte = reponse.querySelector("input[type='radio']").checked;
+
+            const ligne = document.createElement("div");
+            ligne.className = "reponse-row";
+
+            if (correcte) {
+                ligne.classList.add("correcte");
+            }
+
+            const lettre = document.createElement("span");
+            lettre.className = "reponse-lettre";
+            lettre.textContent = String.fromCharCode(65 + index);
+
+            const contenu = document.createElement("span");
+            contenu.textContent = texte;
+
+            ligne.appendChild(lettre);
+            ligne.appendChild(contenu);
+
+            if (correcte) {
+                const indication = document.createElement("span");
+                indication.className = "bonne-reponse";
+                indication.textContent = "✓ Bonne réponse";
+                ligne.appendChild(indication);
+            }
+
+            conteneurReponses.appendChild(ligne);
+        });
+        // Afficher la question dans la liste
+        listeQuestions.appendChild(question);
+
+        // Actualiser les compteurs
+        mettreAJourCompteurs();
+
+        // Fermer le formulaire
+        document.getElementById("new-question-panel").hidden = true;
+        boutonAjouterQuestion.hidden = false;
+            });
+}
+
 // Ajouter une ligne de réponse (max 5)
 function ajouterReponse(bloc, texte = "") {
     const reponses = bloc.querySelector(".q-reponses");
@@ -156,7 +231,6 @@ if (tabQuestions && tabResults && sectionQuestions && sectionResults) {
         tabQuestions.classList.remove("active");
         tabResults.classList.add("active");
     });
-
     tabQuestions.addEventListener("click", function () {
         sectionQuestions.hidden = false;
         sectionResults.hidden = true;
@@ -183,21 +257,17 @@ function creerReponse(texte = "", numero = 0, vraiFaux = false) {
             Bonne réponse
         </label>
     `;
-
     const champ = ligne.querySelector(".new-answer-text");
     champ.value = texte;
 
     if (vraiFaux) {
         champ.readOnly = true;
     }
-
     if (numero === 0) {
         ligne.querySelector("input[type='radio']").checked = true;
     }
-
     reponsesQuestion.appendChild(ligne);
 }
-
 if (reponsesQuestion) {
     creerReponse("", 0);
     creerReponse("", 1);
@@ -213,7 +283,6 @@ if (boutonAjouterReponse && reponsesQuestion) {
         if (nombre < 5) {
             creerReponse("", nombre);
         }
-
         if (nombre + 1 >= 5) {
             boutonAjouterReponse.hidden = true;
         }
@@ -232,7 +301,6 @@ if (reponsesQuestion && boutonAjouterReponse && instructionsQuestion) {
                 b.classList.remove("selected");
             });
             bouton.classList.add("selected");
-
             reponsesQuestion.innerHTML = "";
 
             if (bouton.dataset.type === "vrai_faux") {
