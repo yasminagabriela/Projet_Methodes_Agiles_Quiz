@@ -77,12 +77,41 @@ $title = trim($_POST['title'] ?? '');
 
         <!-- Onglets -->
         <div class="quiz-tabs">
-            <button type="button" class="active">Questions (0)</button>
-            <button type="button" onclick="window.location.href='appercuQuiz.php<?= isset($_GET['id']) ? '?id=' . (int)$_GET['id'] : '' ?>'">Résultats</button>
+            <button type="button" class="active" id="tab-questions">Questions (0)</button>
+            <button type="button" id="tab-results">Résultats</button>
         </div>
 
+        <!-- Section Résultats -->
+        <section class="quiz-results" hidden>
+
+            <div class="results-stats">
+                <div class="results-stat created">
+                    <h2>0</h2>
+                    <p>Quiz remis</p>
+                </div>
+
+                <div class="results-stat published">
+                    <h2>–</h2>
+                    <p>Moyenne</p>
+                </div>
+
+                <div class="results-stat drafts">
+                    <h2>0</h2>
+                    <p>En cours</p>
+                </div>
+            </div>
+
+            <div class="results-empty">
+                <img src="images/mascot.png" alt="Mascotte Qivvi" class="quiz-mascotte">
+                <h3>Aucun résultat pour le moment</h3>
+                <p>Les scores apparaîtront ici dès qu'un étudiant remettra le quiz.</p>
+            </div>
+
+        </section>
+        
         <!-- Questions -->
         <section class="quiz-questions">
+
             <div class="questions-empty">
                 <img src="images/mascot.png" alt="Mascotte Qivvi" class="quiz-mascotte">
                 <h3>Aucune question pour le moment</h3>
@@ -92,7 +121,35 @@ $title = trim($_POST['title'] ?? '');
             <!-- Les questions ajoutées apparaissent ici -->
             <div id="questions-list"></div>
 
-            <!-- Modèle d'une question (invisible, copié par le JS) -->
+            <!-- Interface de création d'une question -->
+            <div id="new-question-panel" class="new-question-panel" hidden>
+                <h3>Nouvelle question</h3>
+
+                <div class="question-types">
+                    <button type="button" class="selected" data-type="choix_multiple">
+                        Choix multiples
+                    </button>
+                    <button type="button" data-type="vrai_faux">
+                        Vrai ou faux
+                    </button>
+                </div>
+
+                <label for="new-question-text">Énoncé</label>
+                <textarea id="new-question-text" placeholder="Écrivez votre question ici"></textarea>
+
+                <p id="new-question-instructions">Entrez 2 à 5 réponses possibles et choisissez la bonne.</p>
+
+                <div id="new-question-answers"></div>
+
+                <button type="button" id="new-add-answer">+ Ajouter une réponse</button>
+
+                <div class="question-actions">
+                    <button type="button" id="new-cancel-question">Annuler</button>
+                    <button type="button" id="new-save-question">Ajouter la question</button>
+                </div>
+            </div>
+
+            <!-- Modèle d'une question : utilisé par le JS -->
             <template id="question-template">
                 <div class="question-block">
                     <div class="question-header">
@@ -116,7 +173,7 @@ $title = trim($_POST['title'] ?? '');
                 </div>
             </template>
 
-            <!-- Modèle d'une réponse -->
+            <!-- Modèle d'une réponse : utilisé par le JS -->
             <template id="reponse-template">
                 <div class="reponse-row">
                     <input type="checkbox" class="r-correcte" title="Bonne réponse">
@@ -125,14 +182,14 @@ $title = trim($_POST['title'] ?? '');
                 </div>
             </template>
 
-            <button type="button" class="add-question">
-                + Ajouter une question
-            </button>
+            <button type="button" class="add-question">+ Ajouter une question</button>
+
         </section>
-    </main>
+        </main>
 
 
-    <script src="js/script.js"></script>
+
+    <script src="js/script.js?v=2"></script>
 </body>
 
 </html>
