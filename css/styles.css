@@ -1404,3 +1404,19 @@ body.dark-mode .new-answer-correct:has(input:checked) {
     color: #b83225;
     border: 1px solid #b83225;
 }
+
+/* Bonne réponse en mode sombre */
+.dark-mode .question-block .reponse-row.correcte {
+    background-color: #203325;
+    border-color: #203325;
+    color: white;
+}
+
+.dark-mode .question-block .reponse-row.correcte .reponse-lettre {
+    background-color: #4d805a;
+    color: white;
+}
+
+.dark-mode .question-block .bonne-reponse {
+    color: #9bd3a6;
+}
