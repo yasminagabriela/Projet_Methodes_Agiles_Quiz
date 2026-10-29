@@ -58,7 +58,7 @@ if (is_logged_in()) {
                             Votre nom d'utilisateur ou mot de passe n'est pas valide.
                         </p>
                     <?php endif; ?>
-                    <p><a href="reinitialiser.php">Mot de passe oublié ?</a></p>
+                    <p><a href="reinitialiser.php">Changer de mot de passe ?</a></p>
 
                     <button class="connecter" type="submit">
                         Connexion

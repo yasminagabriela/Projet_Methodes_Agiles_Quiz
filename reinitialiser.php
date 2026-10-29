@@ -6,24 +6,33 @@ $message = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username     = trim($_POST['nom'] ?? '');
+    $ancien       = $_POST['ancien'] ?? '';
     $nouveau      = $_POST['nouveau'] ?? '';
     $confirmation = $_POST['confirmation'] ?? '';
 
-    if ($username === '') {
-        $erreur = "Le nom d'utilisateur est obligatoire.";
+    if ($username === '' || $ancien === '') {
+        $erreur = "Le nom d'utilisateur et l'ancien mot de passe sont obligatoires.";
     } elseif (strlen($nouveau) < 5) {
-        $erreur = 'Le mot de passe doit contenir au moins 5 caractères.';
+        $erreur = 'Le nouveau mot de passe doit contenir au moins 5 caractères.';
     } elseif ($nouveau !== $confirmation) {
-        $erreur = 'La confirmation ne correspond pas au mot de passe.';
+        $erreur = 'La confirmation ne correspond pas au nouveau mot de passe.';
+    } elseif ($nouveau === $ancien) {
+        $erreur = "Le nouveau mot de passe doit être différent de l'ancien.";
     } else {
-        $stmt = $pdo->prepare('UPDATE users SET password = ? WHERE username = ?');
-        $stmt->execute([password_hash($nouveau, PASSWORD_DEFAULT), $username]);
+        $stmt = $pdo->prepare('SELECT id, password FROM users WHERE username = ?');
+        $stmt->execute([$username]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        // Même message que le nom existe ou non
-        $message = "Si ce nom d'utilisateur existe, son mot de passe a été modifié. Vous pouvez vous connecter.";
+        // Même message si le nom n'existe pas ou si l'ancien mot de passe est faux
+        if (!$user || !password_verify($ancien, $user['password'])) {
+            $erreur = "Nom d'utilisateur ou ancien mot de passe incorrect.";
+        } else {
+            $stmt = $pdo->prepare('UPDATE users SET password = ? WHERE id = ?');
+            $stmt->execute([password_hash($nouveau, PASSWORD_DEFAULT), $user['id']]);
+            $message = 'Votre mot de passe a été modifié. Vous pouvez vous connecter.';
+        }
     }
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -43,18 +52,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="container">
         <div class="content">
             <div class="login-box">
-                <h1>Mot de passe oublié</h1>
-                <p>Entrez votre nom d'utilisateur et choisissez un nouveau mot de passe.</p>
+                <h1>Changer le mot de passe</h1>
+                <p>Entrez votre nom d'utilisateur, votre ancien mot de passe et choisissez un nouveau mot de passe.</p>
 
                 <form method="post">
                     <label for="nom">Nom</label>
                     <input type="text" id="nom" name="nom" placeholder="Entrez votre nom" required>
 
-                    <label for="nouveau">Nouveau mot de passe</label>
-                    <input type="password" id="nouveau" name="nouveau" minlength="4" required>
+                    <label for="ancien">Ancien mot de passe</label>
+                    <input type="password" id="ancien" name="ancien" required>
 
-                    <label for="confirmation">Confirmer le mot de passe</label>
-                    <input type="password" id="confirmation" name="confirmation" minlength="4" required>
+                    <label for="nouveau">Nouveau mot de passe</label>
+                    <input type="password" id="nouveau" name="nouveau" minlength="5" required>
+
+                    <label for="confirmation">Confirmer le nouveau mot de passe</label>
+                    <input type="password" id="confirmation" name="confirmation" minlength="5" required>
 
                     <?php if ($erreur !== ''): ?>
                         <p class="error-text"><?= htmlspecialchars($erreur) ?></p>
