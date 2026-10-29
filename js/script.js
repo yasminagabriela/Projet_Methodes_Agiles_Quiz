@@ -62,47 +62,28 @@ const listeQuestions = document.getElementById("questions-list");
 const templateQuestion = document.getElementById("question-template");
 const templateReponse = document.getElementById("reponse-template");
 
-const boutonSauvegarder = document.getElementById("new-save-question");
+// Les questions ajoutées, gardées en mémoire jusqu'au clic sur "Enregistrer le quiz"
+const questionsQuiz = [];
 
-if (boutonSauvegarder) {
-    boutonSauvegarder.addEventListener("click", function () {
-        const enonce = document.getElementById("new-question-text").value.trim();
-        const type = document.querySelector(".question-types button.selected").dataset.type;
+// Redessine toutes les questions avec le modèle (template) + met à jour les compteurs
+function afficherQuestions() {
+    listeQuestions.innerHTML = "";
 
-        if (enonce === "") {
-            alert("Veuillez écrire une question.");
-            return;
-        }
-        const champsReponses = document.querySelectorAll("#new-question-answers .new-answer-text");
-        for (const champ of champsReponses) {
-            if (champ.value.trim() === "") {
-                alert("Veuillez remplir toutes les réponses.");
-                return;
-            }
-        }
-        console.log(enonce);
-        console.log(type);
-
+    questionsQuiz.forEach(function (q, i) {
         // Copier le modèle de question
-        const question = templateQuestion.content.cloneNode(true);
-        // Ajouter l'énoncé
-        question.querySelector(".q-enonce").textContent = enonce;
-        // Ajouter le type
-        question.querySelector(".q-type").textContent =
-            type === "choix_multiple" ? "QCM" : "Vrai/Faux";
+        const carte = templateQuestion.content.cloneNode(true);
 
-        // Récupérer les réponses du formulaire
-        const reponses = document.querySelectorAll("#new-question-answers .new-answer-row");
-        const conteneurReponses = question.querySelector(".q-reponses");
+        carte.querySelector(".q-numero").textContent = i + 1;
+        carte.querySelector(".q-enonce").textContent = q.enonce;
+        carte.querySelector(".q-type").textContent =
+            q.type === "choix_multiple" ? "QCM" : "Vrai/Faux";
 
-        reponses.forEach(function (reponse, index) {
-            const texte = reponse.querySelector(".new-answer-text").value;
-            const correcte = reponse.querySelector("input[type='radio']").checked;
+        const conteneurReponses = carte.querySelector(".q-reponses");
 
+        q.reponses.forEach(function (r, index) {
             const ligne = document.createElement("div");
             ligne.className = "reponse-row";
-
-            if (correcte) {
+            if (r.est_correcte) {
                 ligne.classList.add("correcte");
             }
 
@@ -111,12 +92,12 @@ if (boutonSauvegarder) {
             lettre.textContent = String.fromCharCode(65 + index);
 
             const contenu = document.createElement("span");
-            contenu.textContent = texte;
+            contenu.textContent = r.texte;
 
             ligne.appendChild(lettre);
             ligne.appendChild(contenu);
 
-            if (correcte) {
+            if (r.est_correcte) {
                 const indication = document.createElement("span");
                 indication.className = "bonne-reponse";
                 indication.textContent = "✓ Bonne réponse";
@@ -125,16 +106,58 @@ if (boutonSauvegarder) {
 
             conteneurReponses.appendChild(ligne);
         });
-        // Afficher la question dans la liste
-        listeQuestions.appendChild(question);
 
-        // Actualiser les compteurs
-        mettreAJourCompteurs();
+        listeQuestions.appendChild(carte);
+    });
 
-        // Fermer le formulaire
+    const n = questionsQuiz.length;
+    const panneauOuvert = !document.getElementById("new-question-panel").hidden;
+
+    document.getElementById("tab-questions").textContent = "Questions (" + n + ")";
+    document.querySelector(".quiz-badges span:nth-child(2)").textContent =
+        n + (n > 1 ? " questions" : " question");
+    document.querySelector(".questions-empty").hidden = n > 0 || panneauOuvert;
+}
+
+// Clic sur "Ajouter la question" (validation + mémorisation + affichage)
+const boutonSauvegarderQuestion = document.getElementById("new-save-question");
+
+if (boutonSauvegarderQuestion && listeQuestions) {
+    boutonSauvegarderQuestion.addEventListener("click", function () {
+        const enonce = document.getElementById("new-question-text").value.trim();
+        const type = document.querySelector(".question-types button.selected").dataset.type;
+
+        if (enonce === "") {
+            alert("Veuillez écrire une question.");
+            return;
+        }
+
+        // Récupérer les réponses du formulaire
+        const reponses = [];
+        document.querySelectorAll("#new-question-answers .new-answer-row").forEach(function (ligne) {
+            reponses.push({
+                texte: ligne.querySelector(".new-answer-text").value.trim(),
+                est_correcte: ligne.querySelector("input[type='radio']").checked,
+            });
+        });
+
+        if (reponses.some(function (r) { return r.texte === ""; })) {
+            alert("Veuillez remplir toutes les réponses.");
+            return;
+        }
+
+        // Mémoriser la question (c'est ce tableau qui sera envoyé à api.php)
+        questionsQuiz.push({ enonce: enonce, type: type, reponses: reponses });
+
+        // Remettre le formulaire à zéro et le fermer
+        document.getElementById("new-question-text").value = "";
+        document.querySelector('.question-types button[data-type="choix_multiple"]').click();
         document.getElementById("new-question-panel").hidden = true;
         boutonAjouterQuestion.hidden = false;
-            });
+
+        // Dessiner la liste (après avoir fermé le formulaire)
+        afficherQuestions();
+    });
 }
 
 // Ajouter une ligne de réponse (max 5)
@@ -197,8 +220,9 @@ if (boutonAjouterQuestion && listeQuestions) {
                 e.target.closest(".reponse-row").remove();
             }
         } else if (e.target.classList.contains("q-supprimer")) {
-            bloc.remove();
-            mettreAJourCompteurs();
+            const index = Array.from(listeQuestions.children).indexOf(bloc);
+            questionsQuiz.splice(index, 1);
+            afficherQuestions();
         }
     });
 
@@ -321,98 +345,7 @@ if (reponsesQuestion && boutonAjouterReponse && instructionsQuestion) {
     });
 }
 
-/* Enregistrer les questions et les réponses */
-
-// Les questions ajoutées, gardées en mémoire jusqu'au clic sur "Enregistrer le quiz"
-const questionsQuiz = [];
-
-// Réaffiche la liste des questions + met à jour les compteurs
-function afficherQuestions() {
-    listeQuestions.innerHTML = "";
-
-    questionsQuiz.forEach(function (q, i) {
-        const bloc = document.createElement("div");
-        bloc.className = "question-block";
-
-        const entete = document.createElement("div");
-        entete.className = "question-header";
-
-        const titre = document.createElement("h4");
-        titre.textContent = "Question " + (i + 1) + " : " + q.enonce;
-
-        const retirer = document.createElement("button");
-        retirer.type = "button";
-        retirer.className = "q-retirer";
-        retirer.dataset.index = i;
-        retirer.textContent = "Supprimer";
-
-        entete.append(titre, retirer);
-
-        const liste = document.createElement("ul");
-        q.reponses.forEach(function (r) {
-            const li = document.createElement("li");
-            li.textContent = (r.est_correcte ? "✔ " : "") + r.texte;
-            liste.appendChild(li);
-        });
-
-        bloc.append(entete, liste);
-        listeQuestions.appendChild(bloc);
-    });
-
-    const n = questionsQuiz.length;
-    const panneauOuvert = !document.getElementById("new-question-panel").hidden;
-
-    document.getElementById("tab-questions").textContent = "Questions (" + n + ")";
-    document.querySelector(".quiz-badges span:nth-child(2)").textContent =
-        n + (n > 1 ? " questions" : " question");
-    document.querySelector(".questions-empty").hidden = n > 0 || panneauOuvert;
-}
-
-const boutonSauvegarderQuestion = document.getElementById("new-save-question");
-
-if (boutonSauvegarderQuestion && listeQuestions) {
-    // Clic sur "Supprimer" d'une question déjà ajoutée
-    listeQuestions.addEventListener("click", function (e) {
-        if (e.target.classList.contains("q-retirer")) {
-            questionsQuiz.splice(Number(e.target.dataset.index), 1);
-            afficherQuestions();
-        }
-    });
-
-    // Clic sur "Ajouter la question"
-    boutonSauvegarderQuestion.addEventListener("click", function () {
-        const enonce = document.getElementById("new-question-text").value.trim();
-        const type = document.querySelector(".question-types .selected").dataset.type;
-
-        const reponses = [];
-        reponsesQuestion.querySelectorAll(".new-answer-row").forEach(function (ligne) {
-            reponses.push({
-                texte: ligne.querySelector(".new-answer-text").value.trim(),
-                est_correcte: ligne.querySelector("input[type='radio']").checked,
-            });
-        });
-
-        if (enonce === "") {
-            alert("L'énoncé est obligatoire.");
-            return;
-        }
-        if (reponses.some(function (r) { return r.texte === ""; })) {
-            alert("Chaque réponse doit avoir un texte.");
-            return;
-        }
-
-        questionsQuiz.push({ enonce: enonce, type: type, reponses: reponses });
-
-        // Remettre le panneau à zéro (le clic recrée 2 réponses vides)
-        document.getElementById("new-question-text").value = "";
-        document.querySelector('.question-types button[data-type="choix_multiple"]').click();
-        document.getElementById("new-question-panel").hidden = true;
-        boutonAjouterQuestion.hidden = false;
-
-        afficherQuestions();
-    });
-}
-
+/* Enregistrer le quiz */
 const boutonSauvegarderQuiz = document.getElementById("save-quiz");
 
 if (boutonSauvegarderQuiz) {

@@ -1441,11 +1441,3 @@ body.dark-mode .new-answer-correct:has(input:checked) {
     opacity: 0.6;
     cursor: not-allowed;
 }
-
-/* Button supprimer d'une question */
-.q-retirer {
-    background: transparent;
-    border: none;
-    color: var(--danger);
-    cursor: pointer;
-}
