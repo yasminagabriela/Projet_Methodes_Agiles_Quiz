@@ -179,11 +179,10 @@ $title = trim($_POST['title'] ?? '');
             </template>
 
             <button type="button" class="add-question">+ Ajouter une question</button>
+            <button type="button" id="save-quiz">Enregistrer le quiz</button>
 
         </section>
         </main>
-
-
 
     <script src="js/script.js?v=3"></script>
 </body>

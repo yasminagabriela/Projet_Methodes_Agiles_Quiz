@@ -50,7 +50,7 @@ async function envoyerQuiz(quiz) {
     });
     const result = await res.json();
     if (!res.ok) {
-        console.error(result.erreur);
+        alert(result.erreur);
         return null;
     }
     return result.id;
@@ -318,5 +318,123 @@ if (reponsesQuestion && boutonAjouterReponse && instructionsQuestion) {
                 boutonAjouterReponse.hidden = false;
             }
         });
+    });
+}
+
+/* Enregistrer les questions et les réponses */
+
+// Les questions ajoutées, gardées en mémoire jusqu'au clic sur "Enregistrer le quiz"
+const questionsQuiz = [];
+
+// Réaffiche la liste des questions + met à jour les compteurs
+function afficherQuestions() {
+    listeQuestions.innerHTML = "";
+
+    questionsQuiz.forEach(function (q, i) {
+        const bloc = document.createElement("div");
+        bloc.className = "question-block";
+
+        const entete = document.createElement("div");
+        entete.className = "question-header";
+
+        const titre = document.createElement("h4");
+        titre.textContent = "Question " + (i + 1) + " : " + q.enonce;
+
+        const retirer = document.createElement("button");
+        retirer.type = "button";
+        retirer.className = "q-retirer";
+        retirer.dataset.index = i;
+        retirer.textContent = "Supprimer";
+
+        entete.append(titre, retirer);
+
+        const liste = document.createElement("ul");
+        q.reponses.forEach(function (r) {
+            const li = document.createElement("li");
+            li.textContent = (r.est_correcte ? "✔ " : "") + r.texte;
+            liste.appendChild(li);
+        });
+
+        bloc.append(entete, liste);
+        listeQuestions.appendChild(bloc);
+    });
+
+    const n = questionsQuiz.length;
+    const panneauOuvert = !document.getElementById("new-question-panel").hidden;
+
+    document.getElementById("tab-questions").textContent = "Questions (" + n + ")";
+    document.querySelector(".quiz-badges span:nth-child(2)").textContent =
+        n + (n > 1 ? " questions" : " question");
+    document.querySelector(".questions-empty").hidden = n > 0 || panneauOuvert;
+}
+
+const boutonSauvegarderQuestion = document.getElementById("new-save-question");
+
+if (boutonSauvegarderQuestion && listeQuestions) {
+    // Clic sur "Supprimer" d'une question déjà ajoutée
+    listeQuestions.addEventListener("click", function (e) {
+        if (e.target.classList.contains("q-retirer")) {
+            questionsQuiz.splice(Number(e.target.dataset.index), 1);
+            afficherQuestions();
+        }
+    });
+
+    // Clic sur "Ajouter la question"
+    boutonSauvegarderQuestion.addEventListener("click", function () {
+        const enonce = document.getElementById("new-question-text").value.trim();
+        const type = document.querySelector(".question-types .selected").dataset.type;
+
+        const reponses = [];
+        reponsesQuestion.querySelectorAll(".new-answer-row").forEach(function (ligne) {
+            reponses.push({
+                texte: ligne.querySelector(".new-answer-text").value.trim(),
+                est_correcte: ligne.querySelector("input[type='radio']").checked,
+            });
+        });
+
+        if (enonce === "") {
+            alert("L'énoncé est obligatoire.");
+            return;
+        }
+        if (reponses.some(function (r) { return r.texte === ""; })) {
+            alert("Chaque réponse doit avoir un texte.");
+            return;
+        }
+
+        questionsQuiz.push({ enonce: enonce, type: type, reponses: reponses });
+
+        // Remettre le panneau à zéro (le clic recrée 2 réponses vides)
+        document.getElementById("new-question-text").value = "";
+        document.querySelector('.question-types button[data-type="choix_multiple"]').click();
+        document.getElementById("new-question-panel").hidden = true;
+        boutonAjouterQuestion.hidden = false;
+
+        afficherQuestions();
+    });
+}
+
+const boutonSauvegarderQuiz = document.getElementById("save-quiz");
+
+if (boutonSauvegarderQuiz) {
+    boutonSauvegarderQuiz.addEventListener("click", async function () {
+        const quiz = {
+            titre: document.getElementById("title").value.trim(),
+            description: document.getElementById("description").value.trim(),
+            questions: questionsQuiz,
+        };
+
+        boutonSauvegarderQuiz.disabled = true;   // évite de créer le quiz deux fois
+
+        try {
+            const id = await envoyerQuiz(quiz);
+            if (id !== null) {
+                window.location.href = "index.php";
+                return;
+            }
+        } catch (err) {
+            alert("Erreur de connexion avec le serveur.");
+        }
+
+        boutonSauvegarderQuiz.disabled = false;
     });
 }

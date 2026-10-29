@@ -1420,3 +1420,32 @@ body.dark-mode .new-answer-correct:has(input:checked) {
 .dark-mode .question-block .bonne-reponse {
     color: #9bd3a6;
 }
+/* Bouton "Enregistrer le quiz" */
+#save-quiz {
+    width: 100%;
+    background: var(--accent);
+    color: var(--on-accent);
+    border: none;
+    border-radius: 30px;
+    padding: 18px;
+    margin-top: 12px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#save-quiz:hover {
+    background-color: var(--accent-hover);
+}
+
+#save-quiz:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Button supprimer d'une question */
+.q-retirer {
+    background: transparent;
+    border: none;
+    color: var(--danger);
+    cursor: pointer;
+}
