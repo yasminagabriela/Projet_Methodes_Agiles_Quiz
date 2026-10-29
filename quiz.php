@@ -113,6 +113,9 @@ $nbQuestions = count($questions);
         <!-- Onglets -->
         <div class="quiz-tabs">
             <button type="button" class="active" id="tab-questions">Questions (<?= $nbQuestions ?>)</button>
+                <?php if ($quizId > 0): ?>
+                    <button type="button" onclick="window.location.href='appercuQuiz.php?id=<?= $quizId ?>'">Aperçu</button>
+                <?php endif; ?>
             <button type="button" id="tab-results">Résultats</button>
         </div>
 
