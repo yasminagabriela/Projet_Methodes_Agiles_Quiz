@@ -1,8 +1,43 @@
 <?php
 require_once __DIR__ . '/includes/auth.php';
+require_once __DIR__ . '/includes/db.php';
 require_login();
 $titreRole = (($_SESSION['role'] ?? '') === 'enseignant') ? 'Professeur' : 'Étudiant(e)';
+
+$quizId = isset($_GET['id']) ? (int) $_GET['id'] : 0;
 $title = trim($_POST['title'] ?? '');
+$description = '';
+$questions = [];
+
+if ($quizId > 0) {
+    // Le quiz doit exister ET appartenir à l'utilisateur connecté
+    $stmt = $pdo->prepare('SELECT id, titre, description FROM quiz WHERE id = ? AND user_id = ?');
+    $stmt->execute([$quizId, $_SESSION['user_id']]);
+    $quiz = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$quiz) {
+        header('Location: index.php');
+        exit;
+    }
+
+    $title = $quiz['titre'];
+    $description = $quiz['description'] ?? '';
+
+    // Les questions du quiz
+    $stmt = $pdo->prepare('SELECT id, enonce, type FROM questions WHERE quiz_id = ? ORDER BY id');
+    $stmt->execute([$quizId]);
+    $questions = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Les réponses de chaque question
+    $stmtReponses = $pdo->prepare('SELECT texte, est_correcte FROM reponses WHERE question_id = ? ORDER BY id');
+    foreach ($questions as &$q) {
+        $stmtReponses->execute([$q['id']]);
+        $q['reponses'] = $stmtReponses->fetchAll(PDO::FETCH_ASSOC);
+    }
+    unset($q);
+}
+
+$nbQuestions = count($questions);
 ?>
 
 <!DOCTYPE html>
@@ -39,7 +74,7 @@ $title = trim($_POST['title'] ?? '');
 
             <div class="quiz-badges">
                 <span>Brouillon</span>
-                <span>0 question</span>
+                  <span><?= $nbQuestions ?> question<?= $nbQuestions > 1 ? 's' : '' ?></span>
                 <span>0 remis</span>
             </div>
         </section>
@@ -64,7 +99,7 @@ $title = trim($_POST['title'] ?? '');
                     value="<?= htmlspecialchars($title ?? '') ?>">
 
                 <label for="description">Description (facultatif)</label>
-                <textarea id="description" name="description"></textarea>
+                  <textarea id="description" name="description"><?= htmlspecialchars($description) ?></textarea>
 
                 <label>
                     <input type="checkbox" name="correction" checked>
@@ -77,7 +112,7 @@ $title = trim($_POST['title'] ?? '');
 
         <!-- Onglets -->
         <div class="quiz-tabs">
-            <button type="button" class="active" id="tab-questions">Questions (0)</button>
+            <button type="button" class="active" id="tab-questions">Questions (<?= $nbQuestions ?>)</button>
             <button type="button" id="tab-results">Résultats</button>
         </div>
 
@@ -112,14 +147,36 @@ $title = trim($_POST['title'] ?? '');
         <!-- Questions -->
         <section class="quiz-questions">
 
-            <div class="questions-empty">
+            <div class="questions-empty" <?= $nbQuestions > 0 ? 'hidden' : '' ?>>
                 <img src="images/mascot.png" alt="Mascotte Qivvi" class="quiz-mascotte">
                 <h3>Aucune question pour le moment</h3>
                 <p>Ajoutez votre première question pour construire le quiz.</p>
             </div>
 
             <!-- Les questions ajoutées apparaissent ici -->
-            <div id="questions-list"></div>
+            <div id="questions-list">
+                <?php foreach ($questions as $i => $q): ?>
+                    <div class="question-block">
+                        <div class="question-header">
+                            <span class="q-numero"><?= $i + 1 ?></span>
+                            <h4 class="q-enonce"><?= htmlspecialchars($q['enonce']) ?></h4>
+                            <span class="q-type"><?= $q['type'] === 'choix_multiple' ? 'QCM' : 'Vrai/Faux' ?></span>
+                        </div>
+
+                        <div class="q-reponses">
+                            <?php foreach ($q['reponses'] as $j => $r): ?>
+                                <div class="reponse-row<?= $r['est_correcte'] ? ' correcte' : '' ?>">
+                                    <span class="reponse-lettre"><?= chr(65 + $j) ?></span>
+                                    <span><?= htmlspecialchars($r['texte']) ?></span>
+                                    <?php if ($r['est_correcte']): ?>
+                                        <span class="bonne-reponse">✓ Bonne réponse</span>
+                                    <?php endif; ?>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
 
             <!-- Interface de création d'une question -->
             <div id="new-question-panel" class="new-question-panel" hidden>
@@ -178,8 +235,10 @@ $title = trim($_POST['title'] ?? '');
                 </div>
             </template>
 
-            <button type="button" class="add-question">+ Ajouter une question</button>
-            <button type="button" id="save-quiz">Enregistrer le quiz</button>
+            <?php if ($quizId === 0): ?>
+                <button type="button" class="add-question">+ Ajouter une question</button>
+                <button type="button" id="save-quiz">Enregistrer le quiz</button>
+            <?php endif; ?>
 
         </section>
         </main>
