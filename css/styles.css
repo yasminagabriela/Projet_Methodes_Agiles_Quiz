@@ -1441,3 +1441,32 @@ body.dark-mode .new-answer-correct:has(input:checked) {
     opacity: 0.6;
     cursor: not-allowed;
 }
+
+/* Pages de connexion avec un formulaire plus long (ex. changement de mot de passe) */
+.container-long {
+    height: auto;
+    min-height: 100vh;
+    padding-top: 110px;          /* laisse la place au logo */
+}
+
+.container-long .image_container {
+    height: 80vh;
+}
+
+.container-long .login-box h1 {
+    font-size: 32px;
+}
+
+.container-long .login-box > p {
+    margin-bottom: 24px;
+}
+
+/* Liens dans les formulaires de connexion */
+.login-box form a {
+    color: var(--accent-hover);
+    text-decoration: none;
+}
+
+.login-box form a:hover {
+    text-decoration: underline;
+}

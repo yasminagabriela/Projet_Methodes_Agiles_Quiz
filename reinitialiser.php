@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
     <?php include __DIR__ . '/includes/header.php'; ?>
 
-    <div class="container">
+    <div class="container container-long">
         <div class="content">
             <div class="login-box">
                 <h1>Changer le mot de passe</h1>
