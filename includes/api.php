@@ -5,21 +5,17 @@ require_once __DIR__ . '/auth.php';
 header('Content-Type: application/json; charset=utf-8');
 
 // Small helper, like res.status(code).json(data)
-function repondre(int $code, array $data): void {
+function repondre(int $code, array $data): void
+{
     http_response_code($code);
     echo json_encode($data);
     exit;
 }
 
-
-
 // 1. Accept POST only
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     repondre(405, ['erreur' => 'Méthode non autorisée']);
 }
-
-
-
 
 // 2. Must be logged in AND a teacher
 if (!is_logged_in()) {
@@ -29,17 +25,11 @@ if (($_SESSION['role'] ?? '') !== 'enseignant') {
     repondre(403, ['erreur' => 'Réservé aux enseignants']);
 }
 
-
-
-
 // 3. Read the JSON body
 $data = json_decode(file_get_contents('php://input'), true);
 if (!is_array($data)) {
     repondre(400, ['erreur' => 'JSON invalide']);
 }
-
-
-
 
 // -------------- 4. Validate -------------------
 
@@ -49,12 +39,9 @@ if ($titre === '' || mb_strlen($titre) > 100) {
     repondre(400, ['erreur' => 'Le titre est obligatoire (100 caractères max)']);
 }
 
-
 // description
 $description = trim($data['description'] ?? '');
 $description = $description === '' ? null : $description;
-
-
 
 
 // questions 
@@ -73,7 +60,6 @@ foreach ($questions as $i => $q) {
     if (!in_array($q['type'] ?? '', $typesValides, true)) {
         repondre(400, ['erreur' => "Question $num : type invalide"]);
     }
-
 
     // entre 2 et 5 réponses
     $reponses = $q['reponses'] ?? null;
@@ -95,9 +81,10 @@ foreach ($questions as $i => $q) {
     if ($nbCorrectes === 0) {
         repondre(400, ['erreur' => "Question $num : au moins une réponse doit être correcte"]);
     }
+    if ($q['type'] === 'vrai_faux' && (count($reponses) !== 2 || $nbCorrectes !== 1)) {
+        repondre(400, ['erreur' => "Question $num : un vrai/faux a 2 réponses avec seulement une correcte"]);
+    }
 }
-
-
 
 // 5. Insert everything in a transaction
 try {
@@ -125,6 +112,8 @@ try {
     $pdo->commit();
     repondre(201, ['id' => (int)$quizId]);
 } catch (PDOException $e) {
-    $pdo->rollBack();
+    if ($pdo->inTransaction()) {
+        $pdo->rollBack();
+    }
     repondre(500, ['erreur' => 'Erreur lors de la création du quiz']);
 }

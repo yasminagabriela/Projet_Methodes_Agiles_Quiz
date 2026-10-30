@@ -12,7 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($username === '' || $ancien === '') {
         $erreur = "Le nom d'utilisateur et l'ancien mot de passe sont obligatoires.";
-    } elseif (strlen($nouveau) < 5) {
+    } elseif (mb_strlen($nouveau) < 5) {
         $erreur = 'Le nouveau mot de passe doit contenir au moins 5 caractères.';
     } elseif ($nouveau !== $confirmation) {
         $erreur = 'La confirmation ne correspond pas au nouveau mot de passe.';

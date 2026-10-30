@@ -2,6 +2,11 @@
 require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/includes/db.php';
 require_login();
+
+if (($_SESSION['role'] ?? '') !== 'enseignant') {
+    http_response_code(403);
+    exit('Accès refusé');
+}
 $titreRole = (($_SESSION['role'] ?? '') === 'enseignant') ? 'Professeur' : 'Étudiant(e)';
 
 $quizId = isset($_GET['id']) ? (int) $_GET['id'] : 0;
@@ -9,6 +14,19 @@ $title = trim($_POST['title'] ?? '');
 $description = '';
 $questions = [];
 
+// Enregistrer les paramètres du quiz
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && $quizId > 0) {
+    $newTitle = trim($_POST['title'] ?? '');
+    $newDescr = trim($_POST['description'] ?? '');
+
+    if ($newTitle !== '' && mb_strlen($newTitle) <= 100) {
+        $stmt = $pdo->prepare('UPDATE quiz SET titre = ?, description = ? WHERE id = ? AND user_id = ?');
+        $stmt->execute([$newTitle, $newDescr, $quizId, $_SESSION['user_id']]);
+
+        header('Location: quiz.php?id=' . $quizId);
+        exit;
+    }
+}
 if ($quizId > 0) {
     // Le quiz doit exister ET appartenir à l'utilisateur connecté
     $stmt = $pdo->prepare('SELECT id, titre, description FROM quiz WHERE id = ? AND user_id = ?');
@@ -74,7 +92,7 @@ $nbQuestions = count($questions);
 
             <div class="quiz-badges">
                 <span>Brouillon</span>
-                  <span><?= $nbQuestions ?> question<?= $nbQuestions > 1 ? 's' : '' ?></span>
+                <span><?= $nbQuestions ?> question<?= $nbQuestions > 1 ? 's' : '' ?></span>
                 <span>0 remis</span>
             </div>
         </section>
@@ -95,11 +113,10 @@ $nbQuestions = count($questions);
 
             <form method="post">
                 <label for="title">Titre</label>
-                <input type="text" id="title" name="title"
-                    value="<?= htmlspecialchars($title ?? '') ?>">
+                <input type="text" id="title" maxlength="100" name="title" value="<?= htmlspecialchars($title) ?>">
 
                 <label for="description">Description (facultatif)</label>
-                  <textarea id="description" name="description"><?= htmlspecialchars($description) ?></textarea>
+                <textarea id="description" name="description"><?= htmlspecialchars($description) ?></textarea>
 
                 <label>
                     <input type="checkbox" name="correction" checked>
@@ -113,9 +130,9 @@ $nbQuestions = count($questions);
         <!-- Onglets -->
         <div class="quiz-tabs">
             <button type="button" class="active" id="tab-questions">Questions (<?= $nbQuestions ?>)</button>
-                <?php if ($quizId > 0): ?>
-                    <button type="button" onclick="window.location.href='appercuQuiz.php?id=<?= $quizId ?>'">Aperçu</button>
-                <?php endif; ?>
+            <?php if ($quizId > 0): ?>
+                <button type="button" onclick="window.location.href='appercuQuiz.php?id=<?= $quizId ?>'">Aperçu</button>
+            <?php endif; ?>
             <button type="button" id="tab-results">Résultats</button>
         </div>
 
@@ -146,7 +163,7 @@ $nbQuestions = count($questions);
             </div>
 
         </section>
-        
+
         <!-- Questions -->
         <section class="quiz-questions">
 
@@ -229,22 +246,15 @@ $nbQuestions = count($questions);
                 </div>
             </template>
 
-            <!-- Modèle d'une réponse : utilisé par le JS -->
-            <template id="reponse-template">
-                <div class="reponse-row">
-                    <input type="checkbox" class="r-correcte" title="Bonne réponse">
-                    <input type="text" class="r-texte" placeholder="Réponse">
-                    <button type="button" class="r-supprimer" title="Supprimer la réponse">✕</button>
-                </div>
-            </template>
-
             <?php if ($quizId === 0): ?>
                 <button type="button" class="add-question">+ Ajouter une question</button>
                 <button type="button" id="save-quiz">Enregistrer le quiz</button>
             <?php endif; ?>
 
         </section>
-        </main>
+    </main>
+
+    <?php include __DIR__ . '/includes/footer.php'; ?>
 
     <script src="js/script.js?v=3"></script>
 </body>
