@@ -1470,3 +1470,21 @@ body.dark-mode .new-answer-correct:has(input:checked) {
 .login-box form a:hover {
     text-decoration: underline;
 }
+
+/* Badge du statut */
+.quiz-card .quiz-statut {
+    display: inline-block;
+    align-self: flex-start;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    text-decoration: none;
+}
+
+/* Statut brouillon - rose Qivvi */
+.quiz-card .quiz-statut.brouillon {
+    background-color: #513640;
+    color: #f3bdcf;
+}

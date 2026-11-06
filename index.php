@@ -22,7 +22,7 @@ $quizList = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Qivvi</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/styles.css?v=2">
     <link rel="icon" type="image/png" href="images/icon.png">
 </head>
 
@@ -75,6 +75,7 @@ $quizList = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <div class="quiz-list">
                     <?php foreach ($quizList as $q): ?>
                         <a class="quiz-card" href="quiz.php?id=<?= (int) $q['id'] ?>">
+                            <span class="quiz-statut brouillon">Brouillon</span>
                             <h3><?= htmlspecialchars($q['titre']) ?></h3>
                             <p><?= htmlspecialchars($q['description'] ?? '') ?></p>
                         </a>
