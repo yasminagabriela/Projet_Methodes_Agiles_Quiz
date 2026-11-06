@@ -342,3 +342,107 @@ if (boutonSauvegarderQuiz) {
         boutonSauvegarderQuiz.disabled = false;
     });
 }
+
+/* Bouton "Modifier" d'une question */
+const panneauQuestion = document.getElementById("new-question-panel");
+const boutonAjouterLaQuestion = document.getElementById("new-save-question");
+const boutonAnnulerQuestion = document.getElementById("new-cancel-question");
+
+// Position de la question en cours de modification (null = aucune)
+let indexEnModification = null;
+
+if (listeQuestions && panneauQuestion && boutonAjouterLaQuestion && boutonAnnulerQuestion) {
+
+    // Remet le formulaire en mode "Nouvelle question"
+    function quitterModeModification() {
+        indexEnModification = null;
+        panneauQuestion.querySelector("h3").textContent = "Nouvelle question";
+        boutonAjouterLaQuestion.textContent = "Ajouter la question";
+        document.getElementById("new-question-text").value = "";
+        document.querySelector('.question-types button[data-type="choix_multiple"]').click();
+    }
+
+    // 1. Clic sur "Modifier" : ouvrir le formulaire rempli avec la question
+    listeQuestions.addEventListener("click", function (e) {
+        if (!e.target.classList.contains("q-modifier")) return;
+
+        const bloc = e.target.closest(".question-block");
+        const index = Array.from(listeQuestions.children).indexOf(bloc);
+        const q = questionsQuiz[index];
+        indexEnModification = index;
+
+        panneauQuestion.querySelector("h3").textContent = "Modifier la question " + (index + 1);
+        boutonAjouterLaQuestion.textContent = "Enregistrer la modification";
+        document.getElementById("new-question-text").value = q.enonce;
+
+        // Choisir le bon type de question
+        document.querySelector('.question-types button[data-type="' + q.type + '"]').click();
+
+        // Mettre les réponses de la question et cocher la bonne
+        reponsesQuestion.innerHTML = "";
+        q.reponses.forEach(function (r, i) {
+            creerReponse(r.texte, i, q.type === "vrai_faux");
+        });
+        reponsesQuestion.querySelectorAll("input[type='radio']").forEach(function (radio, i) {
+            radio.checked = q.reponses[i].est_correcte;
+        });
+        if (q.type === "choix_multiple") {
+            boutonAjouterReponse.hidden = q.reponses.length >= 5;
+        }
+
+        panneauQuestion.hidden = false;
+        document.querySelector(".questions-empty").hidden = true;
+        boutonAjouterQuestion.hidden = true;
+        document.getElementById("new-question-text").focus();
+    });
+
+    // 2. Clic sur "Enregistrer la modification" : remplacer la question
+    //    (true = cet écouteur passe AVANT celui de "Ajouter la question",
+    //     pour ne pas ajouter la question en double)
+    panneauQuestion.addEventListener("click", function (e) {
+        if (e.target !== boutonAjouterLaQuestion || indexEnModification === null) return;
+        e.stopPropagation();   // empêche l'ancien code d'ajouter une nouvelle question
+
+        const enonce = document.getElementById("new-question-text").value.trim();
+        const type = document.querySelector(".question-types button.selected").dataset.type;
+
+        if (enonce === "") {
+            alert("Veuillez écrire une question.");
+            return;
+        }
+
+        const reponses = [];
+        document.querySelectorAll("#new-question-answers .new-answer-row").forEach(function (ligne) {
+            reponses.push({
+                texte: ligne.querySelector(".new-answer-text").value.trim(),
+                est_correcte: ligne.querySelector("input[type='radio']").checked,
+            });
+        });
+
+        if (reponses.some(function (r) { return r.texte === ""; })) {
+            alert("Veuillez remplir toutes les réponses.");
+            return;
+        }
+
+        questionsQuiz[indexEnModification] = { enonce: enonce, type: type, reponses: reponses };
+
+        quitterModeModification();
+        panneauQuestion.hidden = true;
+        boutonAjouterQuestion.hidden = false;
+        afficherQuestions();
+    }, true);
+
+    // 3. Clic sur "Annuler" : sortir du mode modification
+    boutonAnnulerQuestion.addEventListener("click", function () {
+        if (indexEnModification !== null) {
+            quitterModeModification();
+        }
+    });
+
+    // 4. Supprimer une question pendant une modification : fermer le formulaire
+    listeQuestions.addEventListener("click", function (e) {
+        if (e.target.classList.contains("q-supprimer") && indexEnModification !== null) {
+            boutonAnnulerQuestion.click();
+        }
+    }, true);
+}
