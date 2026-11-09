@@ -17,6 +17,7 @@ $pdo->exec("CREATE TABLE IF NOT EXISTS quiz (
     titre VARCHAR(100) NOT NULL,
     description TEXT,
     user_id INT NOT NULL,
+    statut VARCHAR(20) NOT NULL DEFAULT 'brouillon',
     FOREIGN KEY (user_id) REFERENCES users(id)
 )");
 

@@ -29,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $quizId > 0) {
 }
 if ($quizId > 0) {
     // Le quiz doit exister ET appartenir à l'utilisateur connecté
-    $stmt = $pdo->prepare('SELECT id, titre, description FROM quiz WHERE id = ? AND user_id = ?');
+    $stmt = $pdo->prepare('SELECT id, titre, description, statut FROM quiz WHERE id = ? AND user_id = ?');
     $stmt->execute([$quizId, $_SESSION['user_id']]);
     $quiz = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -91,21 +91,35 @@ $nbQuestions = count($questions);
             <h1><?= htmlspecialchars($title) ?></h1>
 
             <div class="quiz-badges">
-                <span>Brouillon</span>
+                <?php $estPublie = ($quiz['statut'] ?? 'brouillon') === 'publie'; ?>
+                <span class="quiz-statut <?= $estPublie ? 'publie' : 'brouillon' ?>">
+                    <?= $estPublie ? 'Publié' : 'Brouillon' ?>
+                </span>
                 <span><?= $nbQuestions ?> question<?= $nbQuestions > 1 ? 's' : '' ?></span>
                 <span>0 remis</span>
             </div>
         </section>
 
         <!-- Publication -->
-        <section class="quiz-publication">
-            <div>
-                <h3>Ce quiz est en brouillon</h3>
-                <p>Ajoutez vos questions, puis publiez-le pour obtenir un code à donner à vos étudiants.</p>
-            </div>
-
-            <button type="button">Publier le quiz</button>
-        </section>
+        <?php if ($quizId > 0 && $quiz['statut'] === 'brouillon'): ?>
+            <section class="quiz-publication">
+                <div>
+                    <h3>Ce quiz est en brouillon</h3>
+                    <p>
+                        Ajoutez vos questions, puis publiez-le
+                        pour le rendre accessible aux étudiants.
+                    </p>
+                </div>
+                <button type="button">Publier le quiz</button>
+            </section>
+        <?php elseif ($quizId > 0 && $quiz['statut'] === 'publie'): ?>
+            <section class="quiz-publication">
+                <div>
+                    <h3>Ce quiz est publié</h3>
+                    <p>Ce quiz est accessible aux étudiants.</p>
+                </div>
+            </section>
+        <?php endif; ?>
 
         <!-- Paramètres -->
         <details class="quiz-options">

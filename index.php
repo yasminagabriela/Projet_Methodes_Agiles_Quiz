@@ -7,12 +7,24 @@ $estEnseignant = ($_SESSION['role'] ?? '') === 'enseignant';
 $titreRole = $estEnseignant ? 'Professeur' : 'Étudiant(e)';
 
 if ($estEnseignant) {
-    $stmt = $pdo->prepare("SELECT id, titre, description FROM quiz WHERE user_id = ? ORDER BY id DESC");
+    $stmt = $pdo->prepare("SELECT id, titre, description, statut FROM quiz WHERE user_id = ? ORDER BY id DESC");
     $stmt->execute([$_SESSION['user_id']]);
 } else {
     $stmt = $pdo->query("SELECT id, titre, description FROM quiz ORDER BY id DESC");
 }
 $quizList = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$nbBrouillons = 0;
+$nbPublies = 0;
+
+if ($estEnseignant) {
+    foreach ($quizList as $quiz) {
+        if ($quiz['statut'] === 'brouillon') {
+            $nbBrouillons++;
+        } elseif ($quiz['statut'] === 'publie') {
+            $nbPublies++;
+        }
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -54,11 +66,11 @@ $quizList = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <p>Quiz créés</p>
                 </div>
                 <div class="stat-card published">
-                    <h2>0</h2>
+                    <h2><?= $nbPublies ?></h2>
                     <p>Quiz publiés</p>
                 </div>
                 <div class="stat-card drafts">
-                    <h2>0</h2>
+                    <h2><?= $nbBrouillons ?></h2>
                     <p>Brouillons</p>
                 </div>
                 <div class="stat-card submitted">
@@ -75,7 +87,10 @@ $quizList = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <div class="quiz-list">
                     <?php foreach ($quizList as $q): ?>
                         <a class="quiz-card" href="quiz.php?id=<?= (int) $q['id'] ?>">
-                            <span class="quiz-statut brouillon">Brouillon</span>
+                            <?php $estBrouillon = $q['statut'] === 'brouillon'; ?>
+                            <span class="quiz-statut <?= $estBrouillon ? 'brouillon' : 'publie' ?>">
+                                <?= $estBrouillon ? 'Brouillon' : 'Publié' ?>
+                            </span>
                             <h3><?= htmlspecialchars($q['titre']) ?></h3>
                             <p><?= htmlspecialchars($q['description'] ?? '') ?></p>
                         </a>
