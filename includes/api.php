@@ -91,8 +91,8 @@ try {
     $pdo->beginTransaction();
 
     // prepare est utile avec ? pour prévenir des injections sql
-    $stmt = $pdo->prepare('INSERT INTO quiz (titre, description, user_id) VALUES (?, ?, ?)');
-    $stmt->execute([$titre, $description, $_SESSION['user_id']]);
+    $stmt = $pdo->prepare('INSERT INTO quiz (titre, description, user_id, statut) VALUES (?, ?, ?, ?)');
+    $stmt->execute([$titre, $description, $_SESSION['user_id'], 'brouillon']);
     $quizId = $pdo->lastInsertId();
 
     // Prepared once, executed in the loops
