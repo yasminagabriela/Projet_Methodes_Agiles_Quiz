@@ -55,6 +55,36 @@ async function envoyerQuiz(quiz) {
     return result.id;
 }
 
+/* Boîte de confirmation : retourne true si l'utilisateur confirme, false sinon */
+const dialogueConfirmation = document.getElementById("confirm-dialog");
+
+function confirmer(titre, message) {
+    // Si la boîte n'existe pas dans la page, on utilise celle du navigateur
+    if (!dialogueConfirmation) {
+        return Promise.resolve(window.confirm(message));
+    }
+
+    document.getElementById("confirm-title").textContent = titre;
+    document.getElementById("confirm-message").textContent = message;
+    dialogueConfirmation.returnValue = "";   // sinon la touche Échap garderait la valeur du dernier clic
+
+    return new Promise(function (resolve) {
+        dialogueConfirmation.addEventListener("close", function () {
+            resolve(dialogueConfirmation.returnValue === "supprimer");
+        }, { once: true });
+        dialogueConfirmation.showModal();
+    });
+}
+
+// Cliquer en dehors de la boîte = annuler
+if (dialogueConfirmation) {
+    dialogueConfirmation.addEventListener("click", function (e) {
+        if (e.target === dialogueConfirmation) {
+            dialogueConfirmation.close();
+        }
+    });
+}
+
 /* Ajouter une question (page quiz.php) */
 const boutonAjouterQuestion = document.querySelector(".add-question");
 const listeQuestions = document.getElementById("questions-list");
@@ -186,12 +216,24 @@ if (boutonAjouterQuestion && listeQuestions) {
     });
 
     // Un seul écouteur pour les boutons de toutes les questions, même celles ajoutées plus tard
-    listeQuestions.addEventListener("click", function (e) {
+        listeQuestions.addEventListener("click", async function (e) {
         const bloc = e.target.closest(".question-block");
         if (!bloc) return;
 
         if (e.target.classList.contains("q-supprimer")) {
             const index = Array.from(listeQuestions.children).indexOf(bloc);
+
+            const ok = await confirmer(
+                "Supprimer cette question ?",
+                "La question " + (index + 1) + " sera retirée du quiz."
+            );
+            if (!ok) return;
+
+            // Si on était en train de modifier une question, fermer le formulaire
+            if (indexEnModification !== null) {
+                boutonAnnulerQuestion.click();
+            }
+
             questionsQuiz.splice(index, 1);
             afficherQuestions();
         }

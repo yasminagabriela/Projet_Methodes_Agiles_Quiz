@@ -266,11 +266,24 @@ $nbQuestions = count($questions);
             <?php endif; ?>
 
         </section>
+
+            <!-- Boîte de confirmation avant une suppression -->
+        <dialog id="confirm-dialog" class="confirm-dialog" aria-labelledby="confirm-title">
+            <form method="dialog">
+                <h3 id="confirm-title">Supprimer ?</h3>
+                <p id="confirm-message"></p>
+
+                <div class="confirm-actions">
+                    <button type="submit" value="annuler" class="confirm-cancel">Annuler</button>
+                    <button type="submit" value="supprimer" class="confirm-delete">Supprimer</button>
+                </div>
+            </form>
+        </dialog>
     </main>
 
     <?php include __DIR__ . '/includes/footer.php'; ?>
 
-    <script src="js/script.js?v=3"></script>
+    <script src="js/script.js?v=4"></script>
 </body>
 
 </html>
