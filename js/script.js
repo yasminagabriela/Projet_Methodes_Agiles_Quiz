@@ -55,6 +55,36 @@ async function envoyerQuiz(quiz) {
     return result.id;
 }
 
+/* Boîte de confirmation : retourne true si l'utilisateur confirme, false sinon */
+const dialogueConfirmation = document.getElementById("confirm-dialog");
+
+function confirmer(titre, message) {
+    // Si la boîte n'existe pas dans la page, on utilise celle du navigateur
+    if (!dialogueConfirmation) {
+        return Promise.resolve(window.confirm(message));
+    }
+
+    document.getElementById("confirm-title").textContent = titre;
+    document.getElementById("confirm-message").textContent = message;
+    dialogueConfirmation.returnValue = "";   // sinon la touche Échap garderait la valeur du dernier clic
+
+    return new Promise(function (resolve) {
+        dialogueConfirmation.addEventListener("close", function () {
+            resolve(dialogueConfirmation.returnValue === "supprimer");
+        }, { once: true });
+        dialogueConfirmation.showModal();
+    });
+}
+
+// Cliquer en dehors de la boîte = annuler
+if (dialogueConfirmation) {
+    dialogueConfirmation.addEventListener("click", function (e) {
+        if (e.target === dialogueConfirmation) {
+            dialogueConfirmation.close();
+        }
+    });
+}
+
 /* Ajouter une question (page quiz.php) */
 const boutonAjouterQuestion = document.querySelector(".add-question");
 const listeQuestions = document.getElementById("questions-list");
@@ -196,12 +226,24 @@ if (boutonAjouterQuestion && listeQuestions) {
     });
 
     // Un seul écouteur pour les boutons de toutes les questions, même celles ajoutées plus tard
-    listeQuestions.addEventListener("click", function (e) {
+        listeQuestions.addEventListener("click", async function (e) {
         const bloc = e.target.closest(".question-block");
         if (!bloc) return;
 
         if (e.target.classList.contains("q-supprimer")) {
             const index = Array.from(listeQuestions.children).indexOf(bloc);
+
+            const ok = await confirmer(
+                "Supprimer cette question ?",
+                "La question " + (index + 1) + " sera retirée du quiz."
+            );
+            if (!ok) return;
+
+            // Si on était en train de modifier une question, fermer le formulaire
+            if (indexEnModification !== null) {
+                boutonAnnulerQuestion.click();
+            }
+
             questionsQuiz.splice(index, 1);
             afficherQuestions();
         }
@@ -460,4 +502,65 @@ if (listeQuestions && panneauQuestion && boutonAjouterLaQuestion && boutonAnnule
             boutonAnnulerQuestion.click();
         }
     }, true);
+}
+
+/* Supprimer une question d'un quiz déjà enregistré (base de données) */
+async function supprimerQuestionServeur(id) {
+    const res = await fetch("includes/supprimer_question.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: id }),
+    });
+    const result = await res.json();
+    if (!res.ok) {
+        alert(result.erreur);
+        return false;
+    }
+    return true;
+}
+
+// Après une suppression : renuméroter les questions et mettre à jour les compteurs
+function mettreAJourQuestionsEnregistrees() {
+    const blocs = listeQuestions.querySelectorAll(".question-block");
+
+    blocs.forEach(function (bloc, i) {
+        bloc.querySelector(".q-numero").textContent = i + 1;
+    });
+
+    const n = blocs.length;
+    document.getElementById("tab-questions").textContent = "Questions (" + n + ")";
+    document.querySelector(".quiz-badges span:nth-child(2)").textContent =
+        n + (n > 1 ? " questions" : " question");
+    document.querySelector(".questions-empty").hidden = n > 0;
+}
+
+if (listeQuestions) {
+    listeQuestions.addEventListener("click", async function (e) {
+        if (!e.target.classList.contains("q-supprimer")) return;
+
+        // Seules les questions déjà enregistrées ont un data-id
+        const bloc = e.target.closest(".question-block");
+        if (!bloc || !bloc.dataset.id) return;
+
+        const numero = bloc.querySelector(".q-numero").textContent;
+        const ok = await confirmer(
+            "Supprimer cette question ?",
+            "La question " + numero + " et toutes ses réponses seront supprimées définitivement."
+        );
+        if (!ok) return;
+
+        e.target.disabled = true;   // évite un double clic
+
+        try {
+            if (await supprimerQuestionServeur(Number(bloc.dataset.id))) {
+                bloc.remove();
+                mettreAJourQuestionsEnregistrees();
+                return;
+            }
+        } catch (err) {
+            alert("Erreur de connexion avec le serveur.");
+        }
+
+        e.target.disabled = false;
+    });
 }

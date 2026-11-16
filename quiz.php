@@ -215,7 +215,7 @@ $nbQuestions = count($questions);
             <!-- Les questions ajoutées apparaissent ici -->
             <div id="questions-list">
                 <?php foreach ($questions as $i => $q): ?>
-                    <div class="question-block">
+                    <div class="question-block" data-id="<?= (int) $q['id'] ?>">
                         <div class="question-header">
                             <span class="q-numero"><?= $i + 1 ?></span>
                             <h4 class="q-enonce"><?= htmlspecialchars($q['enonce']) ?></h4>
@@ -233,6 +233,9 @@ $nbQuestions = count($questions);
                                 </div>
                             <?php endforeach; ?>
                         </div>
+                            <div class="question-actions">
+                                <button type="button" class="q-supprimer">Supprimer</button>
+                            </div>
                     </div>
                 <?php endforeach; ?>
             </div>
@@ -291,11 +294,24 @@ $nbQuestions = count($questions);
             <?php endif; ?>
 
         </section>
+
+            <!-- Boîte de confirmation avant une suppression -->
+        <dialog id="confirm-dialog" class="confirm-dialog" aria-labelledby="confirm-title">
+            <form method="dialog">
+                <h3 id="confirm-title">Supprimer ?</h3>
+                <p id="confirm-message"></p>
+
+                <div class="confirm-actions">
+                    <button type="submit" value="annuler" class="confirm-cancel">Annuler</button>
+                    <button type="submit" value="supprimer" class="confirm-delete">Supprimer</button>
+                </div>
+            </form>
+        </dialog>
     </main>
 
     <?php include __DIR__ . '/includes/footer.php'; ?>
 
-    <script src="js/script.js?v=3"></script>
+    <script src="js/script.js?v=4"></script>
 </body>
 
 </html>
