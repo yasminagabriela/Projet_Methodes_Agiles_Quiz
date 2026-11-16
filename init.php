@@ -1,5 +1,10 @@
 <?php
-// Initialiser la base de données
+// Créer la base de données
+$pdo = new PDO('mysql:host=localhost', 'root', '');
+$pdo->exec("CREATE DATABASE IF NOT EXISTS quizbd");
+
+
+// Se connecter à la base de données
 require 'includes/db.php';
 
 
@@ -10,6 +15,30 @@ $pdo->exec("CREATE TABLE IF NOT EXISTS users (
     password VARCHAR(255) NOT NULL,
     role ENUM('etudiant', 'enseignant') NOT NULL DEFAULT 'etudiant'
 )");
+
+// Créer le compte enseignant Farid
+if (!$pdo->query("SELECT id FROM users WHERE username = 'Farid'")->fetch()) {
+    $motDePasse = password_hash('Farid', PASSWORD_DEFAULT);
+
+    $stmt = $pdo->prepare("
+        INSERT INTO users (username, password, role)
+        VALUES (?, ?, 'enseignant')
+    ");
+
+    $stmt->execute(['Farid', $motDePasse]);
+}
+
+// Créer le compte étudiant Test
+if (!$pdo->query("SELECT id FROM users WHERE username = 'Test'")->fetch()) {
+    $motDePasse = password_hash('Test', PASSWORD_DEFAULT);
+
+    $stmt = $pdo->prepare("
+        INSERT INTO users (username, password, role)
+        VALUES (?, ?, 'etudiant')
+    ");
+
+    $stmt->execute(['Test', $motDePasse]);
+}
 
 // Créer la table 'quiz'
 $pdo->exec("CREATE TABLE IF NOT EXISTS quiz (

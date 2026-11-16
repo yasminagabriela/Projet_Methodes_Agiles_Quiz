@@ -10,7 +10,12 @@ if ($estEnseignant) {
     $stmt = $pdo->prepare("SELECT id, titre, description, statut FROM quiz WHERE user_id = ? ORDER BY id DESC");
     $stmt->execute([$_SESSION['user_id']]);
 } else {
-    $stmt = $pdo->query("SELECT id, titre, description FROM quiz ORDER BY id DESC");
+    $stmt = $pdo->query("
+    SELECT id, titre, description
+    FROM quiz
+    WHERE statut = 'publie'
+    ORDER BY id DESC
+");
 }
 $quizList = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $nbBrouillons = 0;
@@ -112,7 +117,7 @@ if ($estEnseignant) {
             <?php else: ?>
                 <div class="quiz-list">
                     <?php foreach ($quizList as $q): ?>
-                        <a class="quiz-card" href="passer_quiz.php?id=<?= (int) $q['id'] ?>">
+                        <a class="quiz-card" href="passerQuiz.php?id=<?= (int) $q['id'] ?>">
                             <h3><?= htmlspecialchars($q['titre']) ?></h3>
                             <p><?= htmlspecialchars($q['description'] ?? '') ?></p>
                         </a>
