@@ -1,36 +1,37 @@
 /* ==========================================================
-   VARIABLES DE COULEURS
+   PALETTE DE COULEURS
    Mode clair par défaut, mode sombre redéfini plus bas.
    ========================================================== */
+
 :root {
     /* Fonds */
     --bg: #ffffff;
-    --surface: #f6ecf0;            /* cartes, panneaux */
-    --surface-hover: #f2e3e9;      /* carte survolée */
-    --surface-muted: #ede4e6;      /* footer, onglets, boutons discrets */
+    --surface: #f6ecf0;
+    --surface-hover: #f2e3e9;
+    --surface-muted: #ede4e6;
     --surface-muted-hover: #e1ced7;
-    --field-bg: #ffffff;           /* champs de formulaire, paramètres */
-    --pill-bg: #ffffffb8;          /* pastilles sur les bannières */
+    --field-bg: #ffffff;
+    --pill-bg: #ffffffb8;
     --pill-hover: #ffffff;
 
     /* Textes */
     --text: #191919;
-    --text-strong: #342d31;        /* titres, labels */
-    --text-muted: #766d72;         /* descriptions */
-    --text-soft: #b3a6ad;          /* placeholders, texte de bannière */
+    --text-strong: #342d31;
+    --text-muted: #766d72;
+    --text-soft: #b3a6ad;
 
     /* Bordures */
     --border: #eadde2;
     --input-border: #eadde2;
-    --focus: #c9a0b3;              /* focus et survol de bordure */
+    --focus: #c9a0b3;
 
-    /* Accent (boutons) */
+    /* Boutons et accents */
     --accent: #b5879d;
     --accent-hover: #a37789;
-    --accent-soft: #c8a8b5;        /* titres du footer */
-    --on-accent: #ffffff;          /* texte sur un bouton accent */
+    --accent-soft: #c8a8b5;
+    --on-accent: #ffffff;
 
-    /* Erreur / danger */
+    /* Erreurs */
     --danger: #b3261e;
 
     /* Cartes de statistiques */
@@ -42,6 +43,11 @@
     /* Images */
     --banner-img: url("../images/light-banner.png");
 }
+
+
+/* ==========================================================
+   MODE SOMBRE
+   ========================================================== */
 
 body.dark-mode {
     --bg: #171214;
@@ -73,9 +79,11 @@ body.dark-mode {
     --banner-img: url("../images/dark-banner.png");
 }
 
+
 /* ==========================================================
-   BASE
+   STYLES GÉNÉRAUX
    ========================================================== */
+
 body {
     margin: 0;
     font-family: Arial, sans-serif;
@@ -123,9 +131,52 @@ select {
     margin-bottom: 15px;
 }
 
+
+/* ==========================================================
+   LOGO ET BOUTON DE THÈME
+   ========================================================== */
+
+.logo img {
+    width: 110px;
+    height: auto;
+    position: absolute;
+    top: 20px;
+    left: 20px;
+}
+
+.theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    padding: 5px;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.theme-toggle:hover {
+    background-color: var(--surface-muted);
+}
+
+.theme-toggle img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    filter: brightness(0) saturate(100%) invert(65%) sepia(12%) saturate(600%) hue-rotate(290deg);
+}
+
+
 /* ==========================================================
    PAGE DE CONNEXION
    ========================================================== */
+
 .container {
     display: flex;
     width: 100%;
@@ -139,7 +190,7 @@ select {
     flex: 1;
     display: flex;
     justify-content: left;
-    align-items: left;
+    align-items: flex-start;
     margin-left: 80px;
 }
 
@@ -165,26 +216,21 @@ select {
 .login-box .error-text {
     color: var(--danger);
     font-size: 14px;
-    padding: 0px;
+    padding: 0;
     font-weight: bold;
-    margin-top: 0px;
-}
-
-.connecter {
-    padding: 15px;
-    background-color: var(--accent);
-    color: var(--on-accent);
-    height: 50px;
-    border: none;
-    border-radius: 30px;
     margin-top: 0;
-    cursor: pointer;
-    font-size: 16px;
 }
 
-.connecter:hover {
-    background-color: var(--accent-hover);
+.login-box form a {
+    color: var(--accent-hover);
+    text-decoration: none;
 }
+
+.login-box form a:hover {
+    text-decoration: underline;
+}
+
+/* Image de connexion */
 
 .image_container {
     width: 650px;
@@ -200,6 +246,8 @@ select {
     object-position: center;
     border-radius: 25px;
 }
+
+/* Sélection du rôle */
 
 .role-selection {
     display: flex;
@@ -231,49 +279,49 @@ select {
     color: var(--on-accent);
 }
 
-/* ==========================================================
-   BOUTON DE THÈME + LOGO
-   ========================================================== */
-.theme-toggle {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    width: 40px;
-    height: 40px;
-    padding: 5px;
-    border: none;
-    border-radius: 50%;
-    background: transparent;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
+/* Formulaires de connexion plus longs */
 
-.theme-toggle:hover {
-    background-color: var(--surface-muted);
-}
-
-.theme-toggle img {
-    width: 40px;
-    height: 40px;
-    object-fit: contain;
-    filter: brightness(0) saturate(100%) invert(65%) sepia(12%) saturate(600%) hue-rotate(290deg);
-    /* On peut pas changer la couleur du logo avec : background-color... */
-}
-
-.logo img {
-    width: 110px;
+.container-long {
     height: auto;
-    position: absolute;
-    top: 20px;
-    left: 20px;
+    min-height: 100vh;
+    padding-top: 110px;
 }
 
+.container-long .image_container {
+    height: 80vh;
+}
+
+.container-long .login-box h1 {
+    font-size: 32px;
+}
+
+.container-long .login-box>p {
+    margin-bottom: 24px;
+}
+
+/* Bouton de connexion */
+
+.connecter {
+    padding: 15px;
+    background-color: var(--accent);
+    color: var(--on-accent);
+    height: 50px;
+    border: none;
+    border-radius: 30px;
+    margin-top: 0;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.connecter:hover {
+    background-color: var(--accent-hover);
+}
+
+
 /* ==========================================================
-   FOOTER
+   PIED DE PAGE
    ========================================================== */
+
 .footer {
     background-color: var(--surface-muted);
     color: var(--text-muted);
@@ -303,7 +351,6 @@ select {
     gap: 15px;
 }
 
-/* Remove the gap between names */
 .footer-column p {
     margin: 0;
 }
@@ -335,16 +382,31 @@ select {
     font-size: 14px;
 }
 
+
 /* ==========================================================
-   PAGE index.php (tableau de bord)
+   PAGE D'ACCUEIL — index.php
    ========================================================== */
+
+/* Contenu du tableau de bord */
+
 .dashboard-content {
     max-width: 980px;
     margin: 90px auto;
     padding: 0 20px;
 }
 
+.dashboard-content>h2 {
+    font-size: 26px;
+    color: var(--text-strong);
+    margin: 10px 0 20px;
+}
+
+.dashboard-content>p {
+    color: var(--text-muted);
+}
+
 /* Bannière */
+
 .dashboard-banner {
     background-image: var(--banner-img);
     background-size: cover;
@@ -352,10 +414,8 @@ select {
     background-repeat: no-repeat;
     border-radius: 36px;
     width: 100%;
-    margin-top: 0;
     padding: 30px 40px;
     box-sizing: border-box;
-    height: auto;
 }
 
 .dashboard-banner h1 {
@@ -370,7 +430,8 @@ select {
     margin-bottom: 25px;
 }
 
-/* Formulaire de création */
+/* Formulaire de création d'un quiz */
+
 .quiz-form {
     display: flex;
     flex-direction: row;
@@ -413,6 +474,7 @@ select {
 }
 
 /* Utilisateur et déconnexion */
+
 .dashboard-user {
     position: absolute;
     top: 20px;
@@ -443,6 +505,7 @@ select {
 }
 
 /* Cartes de statistiques */
+
 .stats {
     display: flex;
     gap: 20px;
@@ -455,13 +518,11 @@ select {
     min-width: 0;
     padding: 5px 25px;
     border-radius: 35px;
-    margin-top: 0px;
 }
 
 .stat-card h2 {
     font-size: 35px;
-    margin-bottom: 5px;
-    margin-top: 10px;
+    margin: 10px 0 5px;
     color: var(--text-strong);
 }
 
@@ -470,27 +531,23 @@ select {
     color: var(--text-muted);
 }
 
-.created   { background-color: var(--stat-created); }
-.published { background-color: var(--stat-published); }
-.drafts    { background-color: var(--stat-drafts); }
-.submitted { background-color: var(--stat-submitted); }
-
-/* ----------------------------------------------------------
-   Liste des quiz
-   Grand écran : une carte par ligne, pleine largeur
-   Écran moyen : grille de 2 colonnes
-   Petit écran : 1 colonne
-   ---------------------------------------------------------- */
-.dashboard-content > h2 {
-    font-size: 26px;
-    color: var(--text-strong);
-    margin: 10px 0 20px;
+.created {
+    background-color: var(--stat-created);
 }
 
-/* Message quand il n'y a aucun quiz */
-.dashboard-content > p {
-    color: var(--text-muted);
+.published {
+    background-color: var(--stat-published);
 }
+
+.drafts {
+    background-color: var(--stat-drafts);
+}
+
+.submitted {
+    background-color: var(--stat-submitted);
+}
+
+/* Liste des quiz */
 
 .quiz-list {
     display: flex;
@@ -529,7 +586,6 @@ select {
     margin: 0;
     font-size: 14px;
     color: var(--text-muted);
-    /* Limite la description à 2 lignes */
     display: -webkit-box;
     -webkit-line-clamp: 2;
     line-clamp: 2;
@@ -537,23 +593,32 @@ select {
     overflow: hidden;
 }
 
-/* Écrans moyens : grille de 2 colonnes */
-@media (max-width: 900px) {
-    .quiz-card {
-        flex-basis: calc((100% - 20px) / 2);
-    }
+/* Statut des quiz */
+
+.quiz-card .quiz-statut {
+    display: inline-block;
+    align-self: flex-start;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    text-decoration: none;
 }
 
-/* Très petits écrans (téléphone) : 1 colonne */
-@media (max-width: 500px) {
-    .quiz-card {
-        flex-basis: 100%;
-    }
+.quiz-card .quiz-statut.brouillon,
+.quiz-card .quiz-statut.publie {
+    background-color: #513640;
+    color: #f3bdcf;
 }
+
 
 /* ==========================================================
-   PAGE quiz.php
+   PAGE DE CRÉATION — quiz.php
    ========================================================== */
+
+/* Conteneur et bannière */
+
 .quiz-details {
     max-width: 960px;
     width: 90%;
@@ -561,18 +626,15 @@ select {
     color: var(--text);
 }
 
-/* Bannière */
 .quiz-banner {
+    background-image: var(--banner-img);
     background-size: cover;
     background-repeat: no-repeat;
     border-radius: 36px;
     width: 100%;
-    margin-top: 0;
     margin-bottom: 25px;
     padding: 30px 40px;
     box-sizing: border-box;
-    height: auto;
-    background-image: var(--banner-img);
 }
 
 .quiz-banner-top {
@@ -591,6 +653,8 @@ select {
     color: var(--text-strong);
     margin: 20px 0;
 }
+
+/* Boutons de la bannière */
 
 .quiz-banner .return {
     background: var(--pill-bg);
@@ -627,7 +691,8 @@ select {
     font-size: 14px;
 }
 
-/* Publication */
+/* Publication du quiz */
+
 .quiz-publication {
     display: flex;
     justify-content: space-between;
@@ -664,7 +729,8 @@ select {
     background-color: var(--accent-hover);
 }
 
-/* Paramètres */
+/* Paramètres du quiz */
+
 .quiz-options {
     background: var(--field-bg);
     color: var(--text-strong);
@@ -683,9 +749,7 @@ select {
     font-weight: 500;
 }
 
-/* La petite flèche pour ouvrir les paramètres du quiz */
 .quiz-options summary::after {
-    /* after c'est pour le mettre après le texte */
     content: "";
     width: 12px;
     height: 12px;
@@ -695,7 +759,6 @@ select {
     margin-right: 8px;
 }
 
-/* Flèche vers le haut quand les paramètres sont ouverts */
 .quiz-options[open] summary::after {
     transform: rotate(225deg);
 }
@@ -736,6 +799,7 @@ select {
 }
 
 /* Onglets */
+
 .quiz-tabs {
     display: flex;
     background: var(--surface-muted);
@@ -769,7 +833,8 @@ select {
     background-color: var(--accent-hover);
 }
 
-/* Questions */
+/* Zone des questions */
+
 .questions-empty {
     background: var(--surface);
     border-radius: 30px;
@@ -787,6 +852,29 @@ select {
     color: var(--text-muted);
 }
 
+.questions-empty[hidden],
+.add-question[hidden],
+.new-question-panel[hidden] {
+    display: none !important;
+}
+
+.quiz-questions[hidden],
+.quiz-results[hidden] {
+    display: none;
+}
+
+/* Image de la section questions */
+
+.quiz-mascotte {
+    width: 250px;
+    height: 250px;
+    object-fit: cover;
+    border-radius: 50%;
+    margin-bottom: 5px;
+}
+
+/* Bouton pour ajouter une question */
+
 .add-question {
     width: 100%;
     background: transparent;
@@ -796,37 +884,77 @@ select {
     padding: 18px;
     cursor: pointer;
     margin-top: 0;
+    transition: all 0.25s ease;
 }
 
-/* Image de la section questions */
-.quiz-mascotte {
-    width: 250px;
-    height: 250px;
-    object-fit: cover;
-    border-radius: 50%;
-    margin-bottom: 5px;
+.add-question:hover {
+    background-color: #f8edf3;
+    border-color: #a9859a;
+    color: #8e657e;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 18px rgba(169, 133, 154, 0.15);
 }
 
-/* Bloc d'une question ajoutée */
+.add-question:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+
+/* ==========================================================
+   QUESTIONS ET RÉPONSES
+   ========================================================== */
+
+/* Carte d'une question */
+
 .question-block {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    background: var(--surface);
-    border-radius: 30px;
-    padding: 25px;
-    margin-bottom: 15px;
+    background-color: var(--field-bg);
+    border: 1px solid #eadfe4;
+    border-radius: 36px;
+    padding: 36px;
+    margin-bottom: 24px;
 }
+
+/* En-tête de la question */
 
 .question-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 20px;
+    margin-bottom: 24px;
 }
 
-.question-header h4,
-.question-block label {
+.question-header h4 {
+    font-size: 24px;
+    margin: 0;
     color: var(--text-strong);
+}
+
+/* Numéro de la question */
+
+.question-block .q-numero {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #dfb29b, #c6a4b8);
+    color: white;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+/* Labels, énoncé et type de question */
+
+.question-block label:not(.reponse-row) {
+    display: block;
+    margin: 18px 0 10px;
+    font-size: 18px;
 }
 
 .question-block input[type="text"],
@@ -844,59 +972,6 @@ select {
     border-color: var(--focus);
 }
 
-.reponse-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 6px;
-}
-
-.reponse-row .r-texte {
-    flex: 1;
-}
-
-.reponse-row .r-correcte {
-    accent-color: var(--accent);
-}
-
-.q-supprimer,
-.r-supprimer {
-    background: transparent;
-    border: none;
-    color: var(--danger);
-    cursor: pointer;
-}
-
-.q-ajouter-reponse {
-    align-self: flex-start;
-    background: transparent;
-    border: none;
-    color: var(--accent-hover);
-    cursor: pointer;
-}
-
-
-/* Titre */
-.question-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24px;
-}
-
-.question-header h4 {
-    font-size: 24px;
-    margin: 0;
-}
-
-/* Étiquettes */
-.question-block label {
-    display: block;
-    margin: 18px 0 10px;
-    font-size: 18px;
-}
-
-/* Énoncé */
 .q-enonce {
     width: 100%;
     box-sizing: border-box;
@@ -904,11 +979,19 @@ select {
     border: 1px solid #42343f;
     border-radius: 24px;
     background: transparent;
-    color: white;
-    font-size: 16px;
+    color: var(--text-strong);
+    font-size: 24px;
+    flex: 1;
 }
 
-/* Type de question */
+.question-block .q-enonce {
+    border: none;
+    background: transparent;
+    padding: 0;
+    margin: 0;
+    font-weight: bold;
+}
+
 .q-type {
     padding: 14px 20px;
     border: 1px solid #bfa3b2;
@@ -918,12 +1001,75 @@ select {
     font-size: 16px;
 }
 
-/* Réponses */
+.question-block .q-type {
+    border-radius: 30px;
+    padding: 8px 18px;
+    background: var(--surface);
+    color: var(--text-strong);
+    width: auto;
+}
+
+/* Conteneur des réponses */
+
+.question-block .q-reponses {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+/* Ligne d'une réponse */
+
 .reponse-row {
     display: flex;
+    flex-direction: row;
     align-items: center;
     gap: 12px;
     margin-bottom: 12px;
+}
+
+/* Réponses enregistrées et sélectionnables */
+
+.question-block .reponse-row {
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: 50px;
+    background: var(--surface);
+    color: var(--text-strong);
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+/* Boutons radio et cases à cocher */
+
+.question-block .reponse-row input {
+    accent-color: var(--accent);
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    margin: 0;
+    flex-shrink: 0;
+}
+
+/* Lettre de la réponse */
+
+.question-block .reponse-lettre {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: var(--surface-muted);
+    color: var(--text-strong);
+    font-weight: bold;
+}
+
+/* Texte de la réponse */
+
+.reponse-row .r-texte {
+    flex: 1;
 }
 
 .r-texte {
@@ -937,14 +1083,57 @@ select {
     font-size: 16px;
 }
 
+/* Sélection d'une réponse */
+
+.question-block .reponse-row:hover,
+.question-block .reponse-row:has(input:checked) {
+    background: var(--surface-hover);
+}
+
+.question-block .reponse-row:has(input:checked) {
+    border-color: var(--accent);
+}
+
+.question-block .reponse-row>span:last-child {
+    flex: 1;
+    min-width: 0;
+}
+
+/* Réponses correctes */
+
+.question-block .reponse-row.correcte {
+    background: #eaf3eb;
+    border-color: #eaf3eb;
+    color: #252025;
+}
+
+.question-block .reponse-row.correcte .reponse-lettre {
+    background: #4d805a;
+    color: white;
+}
+
+.question-block .bonne-reponse {
+    margin-left: auto;
+    color: #4d805a;
+    font-weight: bold;
+}
+
+/* Sélection de la bonne réponse dans le formulaire */
+
+.reponse-row .r-correcte {
+    accent-color: var(--accent);
+}
+
 .r-correcte {
     accent-color: #c8a8b9;
     width: 20px;
     height: 20px;
 }
 
-/* Boutons */
+/* Boutons de gestion des questions et réponses */
+
 .q-ajouter-reponse {
+    align-self: flex-start;
     padding: 14px 24px;
     border: 2px dashed #bfa3b2;
     border-radius: 30px;
@@ -963,8 +1152,16 @@ select {
     cursor: pointer;
 }
 
+.q-supprimer {
+    background: white;
+    color: #b83225;
+    border: 1px solid #b83225;
+}
 
-/* Interface de création d'une question */
+
+/* ==========================================================
+   CRÉATION D'UNE NOUVELLE QUESTION
+   ========================================================== */
 
 .new-question-panel {
     background: var(--surface);
@@ -980,6 +1177,8 @@ select {
     margin: 0 0 20px;
     color: var(--text-strong);
 }
+
+/* Choix du type de question */
 
 .question-types {
     display: flex;
@@ -1006,7 +1205,14 @@ select {
     transition: background-color 0.3s;
 }
 
-.new-question-panel > label {
+.question-types button.selected:hover {
+    background-color: var(--accent-hover);
+    color: var(--on-accent);
+}
+
+/* Énoncé de la nouvelle question */
+
+.new-question-panel>label {
     display: block;
     font-size: 18px;
     margin-bottom: 12px;
@@ -1031,10 +1237,12 @@ select {
     border-color: var(--focus);
 }
 
-.new-question-panel > p {
+.new-question-panel>p {
     color: var(--text-muted);
     margin: 30px 0 15px;
 }
+
+/* Réponses proposées */
 
 .new-answer-row {
     display: flex;
@@ -1047,8 +1255,8 @@ select {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 40px;
-    height: 40px;
+    width: 38px;
+    height: 38px;
     flex-shrink: 0;
     border-radius: 50%;
     background: var(--surface-muted);
@@ -1056,18 +1264,30 @@ select {
     font-weight: bold;
 }
 
-.new-answer-row > input[type="text"] {
+.new-answer-row>input[type="text"] {
     flex: 1;
     min-width: 0;
     box-sizing: border-box;
     height: 55px;
 }
 
+.new-answer-text {
+    flex: 1;
+    min-width: 0;
+}
+
+.new-answer-text[readonly] {
+    background: transparent;
+    border: none;
+}
+
+/* Sélection de la bonne réponse */
+
 .new-answer-correct {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 8px 15px;
+    padding: 8px 14px;
     border-radius: 30px;
     background: var(--surface-muted);
     color: var(--text);
@@ -1076,11 +1296,19 @@ select {
 }
 
 .new-answer-correct input {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
     padding: 0;
+    margin: 0;
     accent-color: var(--accent);
 }
+
+.new-answer-correct:has(input:checked) {
+    background: #e8f2e9;
+    color: #36794d;
+}
+
+/* Bouton pour ajouter une réponse */
 
 #new-add-answer {
     background: transparent;
@@ -1090,7 +1318,23 @@ select {
     color: var(--accent-hover);
     cursor: pointer;
     margin-top: 10px;
+    transition: all 0.25s ease;
 }
+
+#new-add-answer:hover {
+    background-color: #f8edf3;
+    border-color: #a9859a;
+    color: #8e657e;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 18px rgba(169, 133, 154, 0.15);
+}
+
+#new-add-answer:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+/* Boutons d'action */
 
 .question-actions {
     display: flex;
@@ -1117,27 +1361,12 @@ select {
 }
 
 
-.questions-empty[hidden] {
-    display: none !important;
-}
-
-.new-question-panel[hidden] {
-    display: none !important;
-}
-
-.add-question[hidden] {
-    display: none !important;
-}
-
-
-/* Section Résultats */
+/* ==========================================================
+   SECTION RÉSULTATS
+   ========================================================== */
 
 .quiz-results {
     margin-top: 20px;
-}
-
-.quiz-results[hidden] {
-    display: none;
 }
 
 .results-stats {
@@ -1179,248 +1408,11 @@ select {
     color: var(--text-muted);
 }
 
-.quiz-questions[hidden] {
-    display: none;
-}
 
+/* ==========================================================
+   ENREGISTREMENT DU QUIZ
+   ========================================================== */
 
-.new-answer-letter {
-    background: var(--surface-muted);
-    color: var(--text-strong);
-    border-radius: 50%;
-    width: 38px;
-    height: 38px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-}
-
-.new-answer-text {
-    flex: 1;
-    min-width: 0;
-}
-
-.new-answer-text[readonly] {
-    background: transparent;
-    border: none;
-}
-
-.new-answer-correct {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 14px;
-    background: var(--surface-muted);
-    border-radius: 30px;
-    white-space: nowrap;
-    cursor: pointer;
-}
-
-.new-answer-correct:has(input:checked) {
-    background: #e8f2e9;
-    color: #36794d;
-}
-
-.new-answer-correct input {
-    accent-color: var(--accent);
-    width: 18px;
-    height: 18px;
-    margin: 0;
-}
-
-body.dark-mode .new-answer-correct:has(input:checked) {
-    background: #203827;
-    color: #98d6a7;
-}
-
-#new-add-answer[hidden] {
-    display: none;
-}
-
-.add-question {
-    transition: all 0.25s ease;
-}
-
-.add-question:hover {
-    background-color: #f8edf3;
-    border-color: #a9859a;
-    color: #8e657e;
-    transform: translateY(-3px);
-    box-shadow: 0 6px 18px rgba(169, 133, 154, 0.15);
-}
-
-.add-question:active {
-    transform: translateY(0);
-    box-shadow: none;
-}
-
-#new-add-answer {
-    transition: all 0.25s ease;
-}
-
-#new-add-answer:hover {
-    background-color: #f8edf3;
-    border-color: #a9859a;
-    color: #8e657e;
-    transform: translateY(-3px);
-    box-shadow: 0 6px 18px rgba(169, 133, 154, 0.15);
-}
-
-#new-add-answer:active {
-    transform: translateY(0);
-    box-shadow: none;
-}
-
-/* Hover du bouton sélectionné */
-.question-types button.selected:hover {
-    background-color: var(--accent-hover);
-    color: var(--on-accent);
-}
-
-.question-block .question-header {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    border: none;
-    padding: 0;
-}
-
-.question-block .q-numero {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #dfb29b, #c6a4b8);
-    color: white;
-    font-weight: bold;
-    flex-shrink: 0;
-}
-
-.question-block .q-enonce {
-    flex: 1;
-    border: none;
-    background: transparent;
-    padding: 0;
-    margin: 0;
-    font-weight: bold;
-}
-
-.question-block .q-type {
-    border-radius: 30px;
-    padding: 8px 18px;
-    background: var(--surface, #f0e9ed);
-    width: auto;
-}
-
-/* Réponses des questions ajoutées */
-.question-block .q-reponses {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-top: 24px;
-}
-
-.question-block .reponse-row {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    padding: 12px 14px;
-    border: 1px solid #e9e0e5;
-    border-radius: 50px;
-    background: #ffffff;
-    color: #252025;
-}
-
-.question-block .reponse-lettre {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 42px;
-    height: 42px;
-    flex-shrink: 0;
-    border-radius: 50%;
-    background: #f0e9ed;
-    color: #706b75;
-    font-weight: bold;
-}
-
-.question-block .reponse-row.correcte {
-    background: #eaf3eb;
-    border-color: #eaf3eb;
-    color: #252025;
-}
-
-.question-block .reponse-row.correcte .reponse-lettre {
-    background: #4d805a;
-    color: white;
-}
-
-.question-block .bonne-reponse {
-    margin-left: auto;
-    color: #4d805a;
-    font-weight: bold;
-}
-
-/* Carte en mode sombre */
-.dark-mode .question-block .reponse-row:not(.correcte) {
-    background: transparent;
-    border-color: #554650;
-    color: #ffffff;
-}
-
-.question-block {
-    background-color: var(--field-bg);
-    border: 1px solid #eadfe4;
-    border-radius: 36px;
-    padding: 36px;
-    margin-bottom: 24px;
-}
-
-.question-header {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    margin-bottom: 24px;
-}
-
-.q-enonce {
-    flex: 1;
-    color: var(--text-strong);
-    font-size: 24px;
-}
-
-.q-type {
-    background-color: var(--surface-muted);
-    color: var(--text-strong);
-    padding: 8px 20px;
-    border-radius: 30px;
-}
-
-.q-supprimer {
-    background: white;
-    color: #b83225;
-    border: 1px solid #b83225;
-}
-
-/* Bonne réponse en mode sombre */
-.dark-mode .question-block .reponse-row.correcte {
-    background-color: #203325;
-    border-color: #203325;
-    color: white;
-}
-
-.dark-mode .question-block .reponse-row.correcte .reponse-lettre {
-    background-color: #4d805a;
-    color: white;
-}
-
-.dark-mode .question-block .bonne-reponse {
-    color: #9bd3a6;
-}
-/* Bouton "Enregistrer le quiz" */
 #save-quiz {
     width: 100%;
     background: var(--accent);
@@ -1442,58 +1434,60 @@ body.dark-mode .new-answer-correct:has(input:checked) {
     cursor: not-allowed;
 }
 
-/* Pages de connexion avec un formulaire plus long (ex. changement de mot de passe) */
-.container-long {
-    height: auto;
-    min-height: 100vh;
-    padding-top: 110px;          /* laisse la place au logo */
+
+/* ==========================================================
+   MODE SOMBRE — STYLES SPÉCIFIQUES
+   ========================================================== */
+
+body.dark-mode .new-answer-correct:has(input:checked) {
+    background: #203827;
+    color: #98d6a7;
 }
 
-.container-long .image_container {
-    height: 80vh;
+.dark-mode .question-block .reponse-row:not(.correcte) {
+    background: transparent;
+    border-color: #554650;
+    color: #ffffff;
 }
 
-.container-long .login-box h1 {
-    font-size: 32px;
+.dark-mode .question-block .reponse-row.correcte {
+    background-color: #203325;
+    border-color: #203325;
+    color: white;
 }
 
-.container-long .login-box > p {
-    margin-bottom: 24px;
+.dark-mode .question-block .reponse-row.correcte .reponse-lettre {
+    background-color: #4d805a;
+    color: white;
 }
 
-/* Liens dans les formulaires de connexion */
-.login-box form a {
-    color: var(--accent-hover);
-    text-decoration: none;
+.dark-mode .question-block .bonne-reponse {
+    color: #9bd3a6;
 }
 
-.login-box form a:hover {
-    text-decoration: underline;
+
+/* ==========================================================
+   RESPONSIVE — TABLETTE ET TÉLÉPHONE
+   ========================================================== */
+
+@media (max-width: 900px) {
+    .quiz-card {
+        flex-basis: calc((100% - 20px) / 2);
+    }
 }
 
-/* Badge du statut */
-.quiz-card .quiz-statut {
-    display: inline-block;
-    align-self: flex-start;
-    padding: 6px 14px;
-    border-radius: 20px;
-    font-size: 13px;
-    font-weight: 600;
-    margin-bottom: 10px;
-    text-decoration: none;
-}
-
-/* Statut brouillon - rose Qivvi */
-.quiz-card .quiz-statut.brouillon {
-    background-color: #513640;
-    color: #f3bdcf;
+@media (max-width: 500px) {
+    .quiz-card {
+        flex-basis: 100%;
+    }
 }
 
 /* Boîte de confirmation (suppression) */
 .confirm-dialog {
     border: none;
     border-radius: 20px;
-    padding: 0;                      /* le padding est sur le form : cliquer à côté = fermer */
+    padding: 0;
+    /* le padding est sur le form : cliquer à côté = fermer */
     width: min(420px, calc(100% - 40px));
     background: var(--bg);
     color: var(--text);

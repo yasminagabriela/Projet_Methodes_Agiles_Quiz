@@ -14,8 +14,30 @@ $title = trim($_POST['title'] ?? '');
 $description = '';
 $questions = [];
 
+// Publier le quiz
+if (
+    $_SERVER['REQUEST_METHOD'] === 'POST'
+    && ($_POST['action'] ?? '') === 'publier'
+    && $quizId > 0
+) {
+    $stmt = $pdo->prepare("
+        UPDATE quiz
+        SET statut = 'publie'
+        WHERE id = ? AND user_id = ?
+    ");
+
+    $stmt->execute([$quizId, $_SESSION['user_id']]);
+
+    header('Location: quiz.php?id=' . $quizId);
+    exit;
+}
+
 // Enregistrer les paramètres du quiz
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && $quizId > 0) {
+if (
+    $_SERVER['REQUEST_METHOD'] === 'POST'
+    && !isset($_POST['action'])
+    && $quizId > 0
+) {
     $newTitle = trim($_POST['title'] ?? '');
     $newDescr = trim($_POST['description'] ?? '');
 
@@ -110,7 +132,10 @@ $nbQuestions = count($questions);
                         pour le rendre accessible aux étudiants.
                     </p>
                 </div>
-                <button type="button">Publier le quiz</button>
+                <form method="post">
+                    <input type="hidden" name="action" value="publier">
+                    <button type="submit">Publier le quiz</button>
+                </form>
             </section>
         <?php elseif ($quizId > 0 && $quiz['statut'] === 'publie'): ?>
             <section class="quiz-publication">

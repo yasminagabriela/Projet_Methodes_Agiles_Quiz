@@ -94,13 +94,20 @@ const templateQuestion = document.getElementById("question-template");
 // Les questions ajoutées, gardées en mémoire jusqu'au clic sur "Enregistrer le quiz"
 const questionsQuiz = [];
 
-// Redessine toutes les questions avec le modèle (template) + met à jour les compteurs
+// Redessine les questions temporaires avec le modèle (template)
 function afficherQuestions() {
-    listeQuestions.innerHTML = "";
+
+    // Supprimer uniquement les questions temporaires
+    listeQuestions.querySelectorAll(".question-block").forEach(function (question) {
+        if (question.dataset.temporaire === "true") {
+            question.remove();
+        }
+    });
 
     questionsQuiz.forEach(function (q, i) {
         // Copier le modèle de question
         const carte = templateQuestion.content.cloneNode(true);
+        carte.querySelector(".question-block").dataset.temporaire = "true";
 
         carte.querySelector(".q-numero").textContent = i + 1;
         carte.querySelector(".q-enonce").textContent = q.enonce;
@@ -112,6 +119,7 @@ function afficherQuestions() {
         q.reponses.forEach(function (r, index) {
             const ligne = document.createElement("div");
             ligne.className = "reponse-row";
+
             if (r.est_correcte) {
                 ligne.classList.add("correcte");
             }
@@ -139,13 +147,15 @@ function afficherQuestions() {
         listeQuestions.appendChild(carte);
     });
 
-    const n = questionsQuiz.length;
+    const n = listeQuestions.querySelectorAll(".question-block").length;
     const panneauOuvert = !document.getElementById("new-question-panel").hidden;
 
     document.getElementById("tab-questions").textContent = "Questions (" + n + ")";
     document.querySelector(".quiz-badges span:nth-child(2)").textContent =
         n + (n > 1 ? " questions" : " question");
-    document.querySelector(".questions-empty").hidden = n > 0 || panneauOuvert;
+
+    document.querySelector(".questions-empty").hidden =
+        n > 0 || listeQuestions.querySelectorAll(".question-block").length > 0 || panneauOuvert;
 }
 
 // Clic sur "Ajouter la question" (validation + mémorisation + affichage)
@@ -166,7 +176,7 @@ if (boutonSauvegarderQuestion && listeQuestions) {
         document.querySelectorAll("#new-question-answers .new-answer-row").forEach(function (ligne) {
             reponses.push({
                 texte: ligne.querySelector(".new-answer-text").value.trim(),
-                est_correcte: ligne.querySelector("input[type='radio']").checked,
+                est_correcte: ligne.querySelector(".new-answer-correct input").checked
             });
         });
 
@@ -278,21 +288,24 @@ function creerReponse(texte = "", numero = 0, vraiFaux = false) {
         <span class="new-answer-letter">${lettre}</span>
         <input type="text" class="new-answer-text" placeholder="Réponse ${numero + 1}">
         <label class="new-answer-correct">
-            <input type="radio" name="new-correct-answer">
+            <input type="${vraiFaux ? 'radio' : 'checkbox'}" name="new-correct-answer">
             Bonne réponse
         </label>
     `;
+
     const champ = ligne.querySelector(".new-answer-text");
+    const choixCorrect = ligne.querySelector(".new-answer-correct input");
+
     champ.value = texte;
 
     if (vraiFaux) {
         champ.readOnly = true;
+        choixCorrect.checked = numero === 0;
     }
-    if (numero === 0) {
-        ligne.querySelector("input[type='radio']").checked = true;
-    }
+
     reponsesQuestion.appendChild(ligne);
 }
+
 if (reponsesQuestion) {
     creerReponse("", 0);
     creerReponse("", 1);
@@ -425,9 +438,11 @@ if (listeQuestions && panneauQuestion && boutonAjouterLaQuestion && boutonAnnule
         q.reponses.forEach(function (r, i) {
             creerReponse(r.texte, i, q.type === "vrai_faux");
         });
-        reponsesQuestion.querySelectorAll("input[type='radio']").forEach(function (radio, i) {
-            radio.checked = q.reponses[i].est_correcte;
+        
+        reponsesQuestion.querySelectorAll(".new-answer-correct input").forEach(function (choix, i) {
+            choix.checked = q.reponses[i].est_correcte;
         });
+
         if (q.type === "choix_multiple") {
             boutonAjouterReponse.hidden = q.reponses.length >= 5;
         }
@@ -457,7 +472,7 @@ if (listeQuestions && panneauQuestion && boutonAjouterLaQuestion && boutonAnnule
         document.querySelectorAll("#new-question-answers .new-answer-row").forEach(function (ligne) {
             reponses.push({
                 texte: ligne.querySelector(".new-answer-text").value.trim(),
-                est_correcte: ligne.querySelector("input[type='radio']").checked,
+                est_correcte: ligne.querySelector(".new-answer-correct input").checked
             });
         });
 
