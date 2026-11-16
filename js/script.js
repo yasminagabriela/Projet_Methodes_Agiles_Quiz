@@ -488,3 +488,64 @@ if (listeQuestions && panneauQuestion && boutonAjouterLaQuestion && boutonAnnule
         }
     }, true);
 }
+
+/* Supprimer une question d'un quiz déjà enregistré (base de données) */
+async function supprimerQuestionServeur(id) {
+    const res = await fetch("includes/supprimer_question.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: id }),
+    });
+    const result = await res.json();
+    if (!res.ok) {
+        alert(result.erreur);
+        return false;
+    }
+    return true;
+}
+
+// Après une suppression : renuméroter les questions et mettre à jour les compteurs
+function mettreAJourQuestionsEnregistrees() {
+    const blocs = listeQuestions.querySelectorAll(".question-block");
+
+    blocs.forEach(function (bloc, i) {
+        bloc.querySelector(".q-numero").textContent = i + 1;
+    });
+
+    const n = blocs.length;
+    document.getElementById("tab-questions").textContent = "Questions (" + n + ")";
+    document.querySelector(".quiz-badges span:nth-child(2)").textContent =
+        n + (n > 1 ? " questions" : " question");
+    document.querySelector(".questions-empty").hidden = n > 0;
+}
+
+if (listeQuestions) {
+    listeQuestions.addEventListener("click", async function (e) {
+        if (!e.target.classList.contains("q-supprimer")) return;
+
+        // Seules les questions déjà enregistrées ont un data-id
+        const bloc = e.target.closest(".question-block");
+        if (!bloc || !bloc.dataset.id) return;
+
+        const numero = bloc.querySelector(".q-numero").textContent;
+        const ok = await confirmer(
+            "Supprimer cette question ?",
+            "La question " + numero + " et toutes ses réponses seront supprimées définitivement."
+        );
+        if (!ok) return;
+
+        e.target.disabled = true;   // évite un double clic
+
+        try {
+            if (await supprimerQuestionServeur(Number(bloc.dataset.id))) {
+                bloc.remove();
+                mettreAJourQuestionsEnregistrees();
+                return;
+            }
+        } catch (err) {
+            alert("Erreur de connexion avec le serveur.");
+        }
+
+        e.target.disabled = false;
+    });
+}

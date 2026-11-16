@@ -190,7 +190,7 @@ $nbQuestions = count($questions);
             <!-- Les questions ajoutées apparaissent ici -->
             <div id="questions-list">
                 <?php foreach ($questions as $i => $q): ?>
-                    <div class="question-block">
+                    <div class="question-block" data-id="<?= (int) $q['id'] ?>">
                         <div class="question-header">
                             <span class="q-numero"><?= $i + 1 ?></span>
                             <h4 class="q-enonce"><?= htmlspecialchars($q['enonce']) ?></h4>
@@ -208,6 +208,9 @@ $nbQuestions = count($questions);
                                 </div>
                             <?php endforeach; ?>
                         </div>
+                            <div class="question-actions">
+                                <button type="button" class="q-supprimer">Supprimer</button>
+                            </div>
                     </div>
                 <?php endforeach; ?>
             </div>
