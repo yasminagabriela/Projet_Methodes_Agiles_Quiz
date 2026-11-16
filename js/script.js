@@ -481,17 +481,19 @@ if (listeQuestions && panneauQuestion && boutonAjouterLaQuestion && boutonAnnule
         }
     });
 
+    /*
     // 4. Supprimer une question pendant une modification : fermer le formulaire
     listeQuestions.addEventListener("click", function (e) {
         if (e.target.classList.contains("q-supprimer") && indexEnModification !== null) {
             boutonAnnulerQuestion.click();
         }
-    }, true);
+    }, true); 
+    */
 }
 
 /* Supprimer une question d'un quiz déjà enregistré (base de données) */
 async function supprimerQuestionServeur(id) {
-    const res = await fetch("includes/supprimer_question.php", {
+    const res = await fetch("includes/supprimerQuestion.php", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id: id }),
@@ -547,5 +549,81 @@ if (listeQuestions) {
         }
 
         e.target.disabled = false;
+    });
+}
+/* Page d'édition d'une question (modifierQuestions.php) */
+const panneauEdition = document.getElementById("edit-question-panel");
+
+if (panneauEdition) {
+    const question = JSON.parse(panneauEdition.dataset.question);
+    const boutonEnregistrer = document.getElementById("new-save-question");
+    const boutonAnnulerEdition = document.getElementById("new-cancel-question");
+
+    // 1. Remplir le formulaire avec la question actuelle
+    document.getElementById("new-question-text").value = question.enonce;
+
+    // Choisir le bon type (le clic remet aussi les instructions et le bouton "+ Ajouter une réponse")
+    document.querySelector('.question-types button[data-type="' + question.type + '"]').click();
+
+    // Mettre les réponses de la question et cocher la bonne
+    reponsesQuestion.innerHTML = "";
+    question.reponses.forEach(function (r, i) {
+        creerReponse(r.texte, i, question.type === "vrai_faux");
+    });
+    reponsesQuestion.querySelectorAll("input[type='radio']").forEach(function (radio, i) {
+        radio.checked = question.reponses[i].est_correcte;
+    });
+    if (question.type === "choix_multiple") {
+        boutonAjouterReponse.hidden = question.reponses.length >= 5;
+    }
+
+    // 2. Annuler : retour au quiz sans rien changer
+    boutonAnnulerEdition.addEventListener("click", function () {
+        window.location.href = "quiz.php?id=" + question.quizId;
+    });
+
+    // 3. Enregistrer : validation + envoi à l'API
+    boutonEnregistrer.addEventListener("click", async function () {
+        const enonce = document.getElementById("new-question-text").value.trim();
+        const type = document.querySelector(".question-types button.selected").dataset.type;
+
+        if (enonce === "") {
+            alert("Veuillez écrire une question.");
+            return;
+        }
+
+        const reponses = [];
+        document.querySelectorAll("#new-question-answers .new-answer-row").forEach(function (ligne) {
+            reponses.push({
+                texte: ligne.querySelector(".new-answer-text").value.trim(),
+                est_correcte: ligne.querySelector("input[type='radio']").checked,
+            });
+        });
+
+        if (reponses.some(function (r) { return r.texte === ""; })) {
+            alert("Veuillez remplir toutes les réponses.");
+            return;
+        }
+
+        boutonEnregistrer.disabled = true;   // évite un double envoi
+
+        try {
+            const res = await fetch("includes/modifierQuestion.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id: question.id, enonce: enonce, type: type, reponses: reponses }),
+            });
+            const result = await res.json();
+
+            if (res.ok) {
+                window.location.href = "quiz.php?id=" + result.quiz_id;
+                return;
+            }
+            alert(result.erreur);
+        } catch (err) {
+            alert("Erreur de connexion avec le serveur.");
+        }
+
+        boutonEnregistrer.disabled = false;
     });
 }

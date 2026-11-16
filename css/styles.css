@@ -1551,3 +1551,18 @@ body.dark-mode .new-answer-correct:has(input:checked) {
 .confirm-delete:hover {
     filter: brightness(0.9);
 }
+
+/* Lien "Modifier" d'une question enregistrée (ouvre modifier_question.php) */
+.question-actions .q-editer {
+    border-radius: 30px;
+    padding: 15px 25px;
+    background: var(--surface-muted);
+    color: var(--text);
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.question-actions .q-editer:hover {
+    background: var(--surface-muted-hover);
+}
