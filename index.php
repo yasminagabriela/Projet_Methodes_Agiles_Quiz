@@ -13,7 +13,6 @@ if ($estEnseignant) {
     $stmt = $pdo->query("
     SELECT id, titre, description
     FROM quiz
-    WHERE statut = 'publie'
     ORDER BY id DESC
 ");
 }

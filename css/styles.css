@@ -1040,17 +1040,6 @@ select {
     transition: 0.2s;
 }
 
-/* Boutons radio et cases à cocher */
-
-.question-block .reponse-row input {
-    accent-color: var(--accent);
-    width: 20px;
-    height: 20px;
-    padding: 0;
-    margin: 0;
-    flex-shrink: 0;
-}
-
 /* Lettre de la réponse */
 
 .question-block .reponse-lettre {
@@ -1084,15 +1073,6 @@ select {
 }
 
 /* Sélection d'une réponse */
-
-.question-block .reponse-row:hover,
-.question-block .reponse-row:has(input:checked) {
-    background: var(--surface-hover);
-}
-
-.question-block .reponse-row:has(input:checked) {
-    border-color: var(--accent);
-}
 
 .question-block .reponse-row>span:last-child {
     flex: 1;

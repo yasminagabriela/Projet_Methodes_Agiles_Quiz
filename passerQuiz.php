@@ -13,11 +13,11 @@ if (($_SESSION['role'] ?? '') !== 'etudiant') {
 // Récupérer l'identifiant du quiz
 $quizId = isset($_GET['id']) ? (int) $_GET['id'] : 0;
 
-// Récupérer le quiz seulement s'il est publié
+// Récupérer le quiz
 $stmt = $pdo->prepare("
     SELECT id, titre, description
     FROM quiz
-    WHERE id = ? AND statut = 'publie'
+    WHERE id = ?
 ");
 $stmt->execute([$quizId]);
 $quiz = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -37,20 +37,6 @@ $stmt = $pdo->prepare("
 ");
 $stmt->execute([$quizId]);
 $questions = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-// Récupérer les réponses de chaque question
-$stmtReponses = $pdo->prepare("
-    SELECT id, texte
-    FROM reponses
-    WHERE question_id = ?
-    ORDER BY id
-");
-
-foreach ($questions as &$q) {
-    $stmtReponses->execute([$q['id']]);
-    $q['reponses'] = $stmtReponses->fetchAll(PDO::FETCH_ASSOC);
-}
-unset($q);
 ?>
 
 <!DOCTYPE html>
@@ -89,23 +75,6 @@ unset($q);
                         <span class="q-type">
                             <?= $q['type'] === 'choix_multiple' ? 'QCM' : 'Vrai/Faux' ?>
                         </span>
-                    </div>
-
-                    <div class="q-reponses">
-                        <?php foreach ($q['reponses'] as $j => $r): ?>
-                            <label class="reponse-row">
-                                <input
-                                    type="<?= $q['type'] === 'choix_multiple' ? 'checkbox' : 'radio' ?>"
-                                    name="question_<?= $q['id'] ?><?= $q['type'] === 'choix_multiple' ? '[]' : '' ?>"
-                                    value="<?= (int) $r['id'] ?>">
-                                <span class="reponse-lettre">
-                                    <?= chr(65 + $j) ?>
-                                </span>
-                                <span>
-                                    <?= htmlspecialchars($r['texte']) ?>
-                                </span>
-                            </label>
-                        <?php endforeach; ?>
                     </div>
                 </div>
             <?php endforeach; ?>
