@@ -234,8 +234,9 @@ $nbQuestions = count($questions);
                             <?php endforeach; ?>
                         </div>
                             <div class="question-actions">
-                                <button type="button" class="q-supprimer">Supprimer</button>
-                            </div>
+                            <a href="modifierQuestions.php?id=<?= (int) $q['id'] ?>" class="q-editer">Modifier</a>
+                            <button type="button" class="q-supprimer">Supprimer</button>
+                        </div>
                     </div>
                 <?php endforeach; ?>
             </div>
