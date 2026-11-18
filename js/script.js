@@ -642,3 +642,38 @@ if (panneauEdition) {
         boutonEnregistrer.disabled = false;
     });
 }
+
+/* Supprimer le quiz entier (bouton "Supprimer le quiz" de quiz.php) */
+const boutonSupprimerQuiz = document.getElementById("supprimer-quiz");
+
+if (boutonSupprimerQuiz) {
+    boutonSupprimerQuiz.addEventListener("click", async function () {
+        const titre = document.querySelector(".quiz-banner h1").textContent;
+        const ok = await confirmer(
+            "Supprimer ce quiz ?",
+            "Le quiz « " + titre + " », ses questions et ses réponses seront supprimés définitivement."
+        );
+        if (!ok) return;
+
+        boutonSupprimerQuiz.disabled = true;   // évite un double clic
+
+        try {
+            const res = await fetch("includes/supprimerQuiz.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id: Number(boutonSupprimerQuiz.dataset.id) }),
+            });
+            const result = await res.json();
+
+            if (res.ok) {
+                window.location.href = "index.php";
+                return;
+            }
+            alert(result.erreur);
+        } catch (err) {
+            alert("Erreur de connexion avec le serveur.");
+        }
+
+        boutonSupprimerQuiz.disabled = false;
+    });
+}

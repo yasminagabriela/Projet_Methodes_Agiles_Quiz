@@ -107,7 +107,9 @@ $nbQuestions = count($questions);
         <section class="quiz-banner">
             <div class="quiz-banner-top">
                 <a href="index.php" class="return">‹ Mes quiz</a>
-                <button type="button" class="delete">Supprimer le quiz</button>
+                <?php if ($quizId > 0): ?>
+                    <button type="button" class="delete" id="supprimer-quiz" data-id="<?= $quizId ?>">Supprimer le quiz</button>
+                <?php endif; ?>
             </div>
 
             <h1><?= htmlspecialchars($title) ?></h1>
