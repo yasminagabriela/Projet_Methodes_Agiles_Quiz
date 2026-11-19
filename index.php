@@ -86,7 +86,7 @@ if ($estEnseignant) {
             <?php else: ?>
                 <div class="quiz-list">
                     <?php foreach ($quizList as $q): ?>
-                        <a class="quiz-card" href="quiz_public.php?id=<?= (int) $q['id'] ?>">
+                        <a class="quiz-card" href="quiz.php?id=<?= (int) $q['id'] ?>">
                             <?php $estBrouillon = $q['statut'] === 'brouillon'; ?>
                             <span class="quiz-statut <?= $estBrouillon ? 'brouillon' : 'publie' ?>">
                                 <?= $estBrouillon ? 'Brouillon' : 'Publié' ?>
