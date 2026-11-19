@@ -1,6 +1,6 @@
 <?php
 
-require __DIR__ . '/../init.php';
+require __DIR__ . '/db.php';
 require __DIR__ . '/auth.php';
 
 // Direct without submitting the form since the form is submitted via POST method to this file with action

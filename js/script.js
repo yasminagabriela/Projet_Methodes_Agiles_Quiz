@@ -41,7 +41,6 @@ if (etudiant && enseignant) {
 }
 
 /* calling the api */
-
 async function envoyerQuiz(quiz) {
     const res = await fetch('includes/api.php', {
         method: 'POST',
@@ -56,22 +55,59 @@ async function envoyerQuiz(quiz) {
     return result.id;
 }
 
+/* Boîte de confirmation : retourne true si l'utilisateur confirme, false sinon */
+const dialogueConfirmation = document.getElementById("confirm-dialog");
+
+function confirmer(titre, message) {
+    // Si la boîte n'existe pas dans la page, on utilise celle du navigateur
+    if (!dialogueConfirmation) {
+        return Promise.resolve(window.confirm(message));
+    }
+
+    document.getElementById("confirm-title").textContent = titre;
+    document.getElementById("confirm-message").textContent = message;
+    dialogueConfirmation.returnValue = "";   // sinon la touche Échap garderait la valeur du dernier clic
+
+    return new Promise(function (resolve) {
+        dialogueConfirmation.addEventListener("close", function () {
+            resolve(dialogueConfirmation.returnValue === "supprimer");
+        }, { once: true });
+        dialogueConfirmation.showModal();
+    });
+}
+
+// Cliquer en dehors de la boîte = annuler
+if (dialogueConfirmation) {
+    dialogueConfirmation.addEventListener("click", function (e) {
+        if (e.target === dialogueConfirmation) {
+            dialogueConfirmation.close();
+        }
+    });
+}
+
 /* Ajouter une question (page quiz.php) */
 const boutonAjouterQuestion = document.querySelector(".add-question");
 const listeQuestions = document.getElementById("questions-list");
 const templateQuestion = document.getElementById("question-template");
-const templateReponse = document.getElementById("reponse-template");
+
 
 // Les questions ajoutées, gardées en mémoire jusqu'au clic sur "Enregistrer le quiz"
 const questionsQuiz = [];
 
-// Redessine toutes les questions avec le modèle (template) + met à jour les compteurs
+// Redessine les questions temporaires avec le modèle (template)
 function afficherQuestions() {
-    listeQuestions.innerHTML = "";
+
+    // Supprimer uniquement les questions temporaires
+    listeQuestions.querySelectorAll(".question-block").forEach(function (question) {
+        if (question.dataset.temporaire === "true") {
+            question.remove();
+        }
+    });
 
     questionsQuiz.forEach(function (q, i) {
         // Copier le modèle de question
         const carte = templateQuestion.content.cloneNode(true);
+        carte.querySelector(".question-block").dataset.temporaire = "true";
 
         carte.querySelector(".q-numero").textContent = i + 1;
         carte.querySelector(".q-enonce").textContent = q.enonce;
@@ -83,6 +119,7 @@ function afficherQuestions() {
         q.reponses.forEach(function (r, index) {
             const ligne = document.createElement("div");
             ligne.className = "reponse-row";
+
             if (r.est_correcte) {
                 ligne.classList.add("correcte");
             }
@@ -110,13 +147,15 @@ function afficherQuestions() {
         listeQuestions.appendChild(carte);
     });
 
-    const n = questionsQuiz.length;
+    const n = listeQuestions.querySelectorAll(".question-block").length;
     const panneauOuvert = !document.getElementById("new-question-panel").hidden;
 
     document.getElementById("tab-questions").textContent = "Questions (" + n + ")";
     document.querySelector(".quiz-badges span:nth-child(2)").textContent =
         n + (n > 1 ? " questions" : " question");
-    document.querySelector(".questions-empty").hidden = n > 0 || panneauOuvert;
+
+    document.querySelector(".questions-empty").hidden =
+        n > 0 || listeQuestions.querySelectorAll(".question-block").length > 0 || panneauOuvert;
 }
 
 // Clic sur "Ajouter la question" (validation + mémorisation + affichage)
@@ -137,7 +176,7 @@ if (boutonSauvegarderQuestion && listeQuestions) {
         document.querySelectorAll("#new-question-answers .new-answer-row").forEach(function (ligne) {
             reponses.push({
                 texte: ligne.querySelector(".new-answer-text").value.trim(),
-                est_correcte: ligne.querySelector("input[type='radio']").checked,
+                est_correcte: ligne.querySelector(".new-answer-correct input").checked
             });
         });
 
@@ -158,27 +197,6 @@ if (boutonSauvegarderQuestion && listeQuestions) {
         // Dessiner la liste (après avoir fermé le formulaire)
         afficherQuestions();
     });
-}
-
-// Ajouter une ligne de réponse (max 5)
-function ajouterReponse(bloc, texte = "") {
-    const reponses = bloc.querySelector(".q-reponses");
-    if (reponses.children.length >= 5) return;
-    const ligne = templateReponse.content.cloneNode(true);
-    ligne.querySelector(".r-texte").value = texte;
-    reponses.appendChild(ligne);
-}
-
-// Mettre à jour les numéros, "Questions (N)", le badge et le message vide
-function mettreAJourCompteurs() {
-    const blocs = listeQuestions.querySelectorAll(".question-block");
-    blocs.forEach(function (bloc, i) {
-        bloc.querySelector(".q-numero").textContent = i + 1;
-    });
-    const n = blocs.length;
-    document.querySelector(".quiz-tabs .active").textContent = "Questions (" + n + ")";
-    document.querySelector(".quiz-badges span:nth-child(2)").textContent = n + (n > 1 ? " questions" : " question");
-    document.querySelector(".questions-empty").style.display = n === 0 ? "" : "none";
 }
 
 if (boutonAjouterQuestion && listeQuestions) {
@@ -208,34 +226,27 @@ if (boutonAjouterQuestion && listeQuestions) {
     });
 
     // Un seul écouteur pour les boutons de toutes les questions, même celles ajoutées plus tard
-    listeQuestions.addEventListener("click", function (e) {
+        listeQuestions.addEventListener("click", async function (e) {
         const bloc = e.target.closest(".question-block");
         if (!bloc) return;
 
-        if (e.target.classList.contains("q-ajouter-reponse")) {
-            ajouterReponse(bloc);
-        } else if (e.target.classList.contains("r-supprimer")) {
-            // Garder au moins 2 réponses
-            if (bloc.querySelectorAll(".reponse-row").length > 2) {
-                e.target.closest(".reponse-row").remove();
-            }
-        } else if (e.target.classList.contains("q-supprimer")) {
+        if (e.target.classList.contains("q-supprimer")) {
             const index = Array.from(listeQuestions.children).indexOf(bloc);
+
+            const ok = await confirmer(
+                "Supprimer cette question ?",
+                "La question " + (index + 1) + " sera retirée du quiz."
+            );
+            if (!ok) return;
+
+            // Si on était en train de modifier une question, fermer le formulaire
+            if (indexEnModification !== null) {
+                boutonAnnulerQuestion.click();
+            }
+
             questionsQuiz.splice(index, 1);
             afficherQuestions();
         }
-    });
-
-    // Vrai/Faux : remplacer les réponses par "Vrai" et "Faux"
-    listeQuestions.addEventListener("change", function (e) {
-        if (!e.target.classList.contains("q-type")) return;
-        const bloc = e.target.closest(".question-block");
-        const vraiFaux = e.target.value === "vrai_faux";
-
-        bloc.querySelector(".q-reponses").innerHTML = "";
-        ajouterReponse(bloc, vraiFaux ? "Vrai" : "");
-        ajouterReponse(bloc, vraiFaux ? "Faux" : "");
-        bloc.querySelector(".q-ajouter-reponse").hidden = vraiFaux;
     });
 }
 
@@ -277,21 +288,24 @@ function creerReponse(texte = "", numero = 0, vraiFaux = false) {
         <span class="new-answer-letter">${lettre}</span>
         <input type="text" class="new-answer-text" placeholder="Réponse ${numero + 1}">
         <label class="new-answer-correct">
-            <input type="radio" name="new-correct-answer">
+            <input type="${vraiFaux ? 'radio' : 'checkbox'}" name="new-correct-answer">
             Bonne réponse
         </label>
     `;
+
     const champ = ligne.querySelector(".new-answer-text");
+    const choixCorrect = ligne.querySelector(".new-answer-correct input");
+
     champ.value = texte;
 
     if (vraiFaux) {
         champ.readOnly = true;
+        choixCorrect.checked = numero === 0;
     }
-    if (numero === 0) {
-        ligne.querySelector("input[type='radio']").checked = true;
-    }
+
     reponsesQuestion.appendChild(ligne);
 }
+
 if (reponsesQuestion) {
     creerReponse("", 0);
     creerReponse("", 1);
@@ -350,11 +364,23 @@ const boutonSauvegarderQuiz = document.getElementById("save-quiz");
 
 if (boutonSauvegarderQuiz) {
     boutonSauvegarderQuiz.addEventListener("click", async function () {
+
         const quiz = {
             titre: document.getElementById("title").value.trim(),
             description: document.getElementById("description").value.trim(),
             questions: questionsQuiz,
         };
+
+        if (quiz.titre === "") {
+            document.querySelector(".quiz-options").open = true;
+            document.getElementById("title").focus();
+            alert("Le quiz doit avoir un titre.");
+            return;
+        }
+        if (questionsQuiz.length === 0) {
+            alert("Ajoutez au moins une question.");
+            return;
+        }
 
         boutonSauvegarderQuiz.disabled = true;   // évite de créer le quiz deux fois
 
@@ -369,5 +395,285 @@ if (boutonSauvegarderQuiz) {
         }
 
         boutonSauvegarderQuiz.disabled = false;
+    });
+}
+
+/* Bouton "Modifier" d'une question */
+const panneauQuestion = document.getElementById("new-question-panel");
+const boutonAjouterLaQuestion = document.getElementById("new-save-question");
+const boutonAnnulerQuestion = document.getElementById("new-cancel-question");
+
+// Position de la question en cours de modification (null = aucune)
+let indexEnModification = null;
+
+if (listeQuestions && panneauQuestion && boutonAjouterLaQuestion && boutonAnnulerQuestion) {
+
+    // Remet le formulaire en mode "Nouvelle question"
+    function quitterModeModification() {
+        indexEnModification = null;
+        panneauQuestion.querySelector("h3").textContent = "Nouvelle question";
+        boutonAjouterLaQuestion.textContent = "Ajouter la question";
+        document.getElementById("new-question-text").value = "";
+        document.querySelector('.question-types button[data-type="choix_multiple"]').click();
+    }
+
+    // 1. Clic sur "Modifier" : ouvrir le formulaire rempli avec la question
+    listeQuestions.addEventListener("click", function (e) {
+        if (!e.target.classList.contains("q-modifier")) return;
+
+        const bloc = e.target.closest(".question-block");
+        const index = Array.from(listeQuestions.children).indexOf(bloc);
+        const q = questionsQuiz[index];
+        indexEnModification = index;
+
+        panneauQuestion.querySelector("h3").textContent = "Modifier la question " + (index + 1);
+        boutonAjouterLaQuestion.textContent = "Enregistrer la modification";
+        document.getElementById("new-question-text").value = q.enonce;
+
+        // Choisir le bon type de question
+        document.querySelector('.question-types button[data-type="' + q.type + '"]').click();
+
+        // Mettre les réponses de la question et cocher la bonne
+        reponsesQuestion.innerHTML = "";
+        q.reponses.forEach(function (r, i) {
+            creerReponse(r.texte, i, q.type === "vrai_faux");
+        });
+        
+        reponsesQuestion.querySelectorAll(".new-answer-correct input").forEach(function (choix, i) {
+            choix.checked = q.reponses[i].est_correcte;
+        });
+
+        if (q.type === "choix_multiple") {
+            boutonAjouterReponse.hidden = q.reponses.length >= 5;
+        }
+
+        panneauQuestion.hidden = false;
+        document.querySelector(".questions-empty").hidden = true;
+        boutonAjouterQuestion.hidden = true;
+        document.getElementById("new-question-text").focus();
+    });
+
+    // 2. Clic sur "Enregistrer la modification" : remplacer la question
+    //    (true = cet écouteur passe AVANT celui de "Ajouter la question",
+    //     pour ne pas ajouter la question en double)
+    panneauQuestion.addEventListener("click", function (e) {
+        if (e.target !== boutonAjouterLaQuestion || indexEnModification === null) return;
+        e.stopPropagation();   // empêche l'ancien code d'ajouter une nouvelle question
+
+        const enonce = document.getElementById("new-question-text").value.trim();
+        const type = document.querySelector(".question-types button.selected").dataset.type;
+
+        if (enonce === "") {
+            alert("Veuillez écrire une question.");
+            return;
+        }
+
+        const reponses = [];
+        document.querySelectorAll("#new-question-answers .new-answer-row").forEach(function (ligne) {
+            reponses.push({
+                texte: ligne.querySelector(".new-answer-text").value.trim(),
+                est_correcte: ligne.querySelector(".new-answer-correct input").checked
+            });
+        });
+
+        if (reponses.some(function (r) { return r.texte === ""; })) {
+            alert("Veuillez remplir toutes les réponses.");
+            return;
+        }
+
+        questionsQuiz[indexEnModification] = { enonce: enonce, type: type, reponses: reponses };
+
+        quitterModeModification();
+        panneauQuestion.hidden = true;
+        boutonAjouterQuestion.hidden = false;
+        afficherQuestions();
+    }, true);
+
+    // 3. Clic sur "Annuler" : sortir du mode modification
+    boutonAnnulerQuestion.addEventListener("click", function () {
+        if (indexEnModification !== null) {
+            quitterModeModification();
+        }
+    });
+
+    /*
+    // 4. Supprimer une question pendant une modification : fermer le formulaire
+    listeQuestions.addEventListener("click", function (e) {
+        if (e.target.classList.contains("q-supprimer") && indexEnModification !== null) {
+            boutonAnnulerQuestion.click();
+        }
+    }, true); 
+    */
+}
+
+/* Supprimer une question d'un quiz déjà enregistré (base de données) */
+async function supprimerQuestionServeur(id) {
+    const res = await fetch("includes/supprimerQuestion.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: id }),
+    });
+    const result = await res.json();
+    if (!res.ok) {
+        alert(result.erreur);
+        return false;
+    }
+    return true;
+}
+
+// Après une suppression : renuméroter les questions et mettre à jour les compteurs
+function mettreAJourQuestionsEnregistrees() {
+    const blocs = listeQuestions.querySelectorAll(".question-block");
+
+    blocs.forEach(function (bloc, i) {
+        bloc.querySelector(".q-numero").textContent = i + 1;
+    });
+
+    const n = blocs.length;
+    document.getElementById("tab-questions").textContent = "Questions (" + n + ")";
+    document.querySelector(".quiz-badges span:nth-child(2)").textContent =
+        n + (n > 1 ? " questions" : " question");
+    document.querySelector(".questions-empty").hidden = n > 0;
+}
+
+if (listeQuestions) {
+    listeQuestions.addEventListener("click", async function (e) {
+        if (!e.target.classList.contains("q-supprimer")) return;
+
+        // Seules les questions déjà enregistrées ont un data-id
+        const bloc = e.target.closest(".question-block");
+        if (!bloc || !bloc.dataset.id) return;
+
+        const numero = bloc.querySelector(".q-numero").textContent;
+        const ok = await confirmer(
+            "Supprimer cette question ?",
+            "La question " + numero + " et toutes ses réponses seront supprimées définitivement."
+        );
+        if (!ok) return;
+
+        e.target.disabled = true;   // évite un double clic
+
+        try {
+            if (await supprimerQuestionServeur(Number(bloc.dataset.id))) {
+                bloc.remove();
+                mettreAJourQuestionsEnregistrees();
+                return;
+            }
+        } catch (err) {
+            alert("Erreur de connexion avec le serveur.");
+        }
+
+        e.target.disabled = false;
+    });
+}
+/* Page d'édition d'une question (modifierQuestions.php) */
+const panneauEdition = document.getElementById("edit-question-panel");
+
+if (panneauEdition) {
+    const question = JSON.parse(panneauEdition.dataset.question);
+    const boutonEnregistrer = document.getElementById("new-save-question");
+    const boutonAnnulerEdition = document.getElementById("new-cancel-question");
+
+    // 1. Remplir le formulaire avec la question actuelle
+    document.getElementById("new-question-text").value = question.enonce;
+
+    // Choisir le bon type (le clic remet aussi les instructions et le bouton "+ Ajouter une réponse")
+    document.querySelector('.question-types button[data-type="' + question.type + '"]').click();
+
+    // Mettre les réponses de la question et cocher la bonne
+    reponsesQuestion.innerHTML = "";
+    question.reponses.forEach(function (r, i) {
+        creerReponse(r.texte, i, question.type === "vrai_faux");
+    });
+    reponsesQuestion.querySelectorAll("input[type='radio']").forEach(function (radio, i) {
+        radio.checked = question.reponses[i].est_correcte;
+    });
+    if (question.type === "choix_multiple") {
+        boutonAjouterReponse.hidden = question.reponses.length >= 5;
+    }
+
+    // 2. Annuler : retour au quiz sans rien changer
+    boutonAnnulerEdition.addEventListener("click", function () {
+        window.location.href = "quiz.php?id=" + question.quizId;
+    });
+
+    // 3. Enregistrer : validation + envoi à l'API
+    boutonEnregistrer.addEventListener("click", async function () {
+        const enonce = document.getElementById("new-question-text").value.trim();
+        const type = document.querySelector(".question-types button.selected").dataset.type;
+
+        if (enonce === "") {
+            alert("Veuillez écrire une question.");
+            return;
+        }
+
+        const reponses = [];
+        document.querySelectorAll("#new-question-answers .new-answer-row").forEach(function (ligne) {
+            reponses.push({
+                texte: ligne.querySelector(".new-answer-text").value.trim(),
+                est_correcte: ligne.querySelector("input[type='radio']").checked,
+            });
+        });
+
+        if (reponses.some(function (r) { return r.texte === ""; })) {
+            alert("Veuillez remplir toutes les réponses.");
+            return;
+        }
+
+        boutonEnregistrer.disabled = true;   // évite un double envoi
+
+        try {
+            const res = await fetch("includes/modifierQuestion.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id: question.id, enonce: enonce, type: type, reponses: reponses }),
+            });
+            const result = await res.json();
+
+            if (res.ok) {
+                window.location.href = "quiz.php?id=" + result.quiz_id;
+                return;
+            }
+            alert(result.erreur);
+        } catch (err) {
+            alert("Erreur de connexion avec le serveur.");
+        }
+
+        boutonEnregistrer.disabled = false;
+    });
+}
+
+/* Supprimer le quiz entier (bouton "Supprimer le quiz" de quiz.php) */
+const boutonSupprimerQuiz = document.getElementById("supprimer-quiz");
+
+if (boutonSupprimerQuiz) {
+    boutonSupprimerQuiz.addEventListener("click", async function () {
+        const titre = document.querySelector(".quiz-banner h1").textContent;
+        const ok = await confirmer(
+            "Supprimer ce quiz ?",
+            "Le quiz « " + titre + " », ses questions et ses réponses seront supprimés définitivement."
+        );
+        if (!ok) return;
+
+        boutonSupprimerQuiz.disabled = true;   // évite un double clic
+
+        try {
+            const res = await fetch("includes/supprimerQuiz.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id: Number(boutonSupprimerQuiz.dataset.id) }),
+            });
+            const result = await res.json();
+
+            if (res.ok) {
+                window.location.href = "index.php";
+                return;
+            }
+            alert(result.erreur);
+        } catch (err) {
+            alert("Erreur de connexion avec le serveur.");
+        }
+
+        boutonSupprimerQuiz.disabled = false;
     });
 }

@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (!$hash || !password_verify($ancien, $hash)) {
         $erreur = "L'ancien mot de passe est incorrect.";
-    } elseif (strlen($nouveau) < 5) {
+    } elseif (mb_strlen($nouveau) < 5) {
         $erreur = 'Le nouveau mot de passe doit contenir au moins 5 caractères.';
     } elseif ($nouveau !== $confirmation) {
         $erreur = 'La confirmation ne correspond pas au nouveau mot de passe.';
@@ -62,10 +62,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="password" id="ancien" name="ancien" required>
 
                 <label for="nouveau">Nouveau mot de passe</label>
-                <input type="password" id="nouveau" name="nouveau" minlength="4" required>
+                <input type="password" id="nouveau" name="nouveau" minlength="5" required>
 
                 <label for="confirmation">Confirmer le nouveau mot de passe</label>
-                <input type="password" id="confirmation" name="confirmation" minlength="4" required>
+                <input type="password" id="confirmation" name="confirmation" minlength="5" required>
 
                 <?php if ($erreur !== ''): ?>
                     <p class="error-text"><?= htmlspecialchars($erreur) ?></p>

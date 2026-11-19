@@ -13,5 +13,5 @@ try {
     $pdo = new PDO("mysql:host=$serveur;dbname=$baseDeDonnees;charset=utf8mb4", $utilisateur, $motDePasse);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (PDOException $e) {
-    exit('Connexion impossible : ' . $e->getMessage());
+    exit('Connexion impossible.');
 }

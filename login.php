@@ -13,7 +13,7 @@ if (is_logged_in()) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quivvi</title>
+    <title>Qivvi</title>
 
     <link rel="stylesheet" href="css/styles.css">
     <link rel="icon" type="image/png" href="images/icon.png">
@@ -48,7 +48,7 @@ if (is_logged_in()) {
                     </div>
 
                     <label for="nom">Nom</label>
-                    <input type="text" id="nom" name="nom" placeholder="Entrez votre nom" required>
+                    <input type="text" id="nom" name="nom" placeholder="Entrez votre nom" maxlength="20" required>
 
                     <label for="mdp">Mot de passe</label>
                     <input type="password" id="mdp" name="mdp" placeholder="Entrez votre mot de passe" required>
