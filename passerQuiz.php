@@ -179,10 +179,12 @@ $nbQuestions = count($questions);
         const dialogueSoumettre = document.getElementById('soumettre-dialog');
 
         if (formulaireQuiz) {
+
             // Barre de progression : se met à jour à chaque réponse cochée ou décochée
             formulaireQuiz.addEventListener('change', function() {
                 const cartes = formulaireQuiz.querySelectorAll('.quiz-question-card');
                 let repondues = 0;
+
                 cartes.forEach(function(carte) {
                     if (carte.querySelector('input:checked')) {
                         repondues++;
@@ -191,11 +193,13 @@ $nbQuestions = count($questions);
 
                 document.getElementById('progress-text').textContent =
                     repondues + ' / ' + cartes.length + ' réponses';
+
                 document.getElementById('progress-fill').style.width =
                     (repondues / cartes.length * 100) + '%';
             });
 
             formulaireQuiz.addEventListener('submit', function(e) {
+                
                 // On bloque l'envoi pour d'abord demander la confirmation
                 e.preventDefault();
 
