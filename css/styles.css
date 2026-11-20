@@ -2061,6 +2061,16 @@ body.dark-mode .new-answer-correct:has(input:checked) {
     background: var(--accent-hover);
 }
 
+/* Message affiché sur l'accueil après l'envoi d'un quiz */
+.message-succes {
+    margin: 0 0 20px;
+    padding: 15px 22px;
+    border: 2px solid var(--accent);
+    border-radius: 30px;
+    background: var(--surface);
+    color: var(--text-strong);
+}
+
 /* Lien "Modifier" d'une question enregistrée (ouvre modifier_question.php) */
 .question-actions .q-editer {
     border-radius: 30px;
