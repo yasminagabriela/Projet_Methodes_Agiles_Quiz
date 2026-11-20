@@ -656,7 +656,13 @@ select {
 
 /* Boutons de la bannière */
 
-.quiz-banner .return {
+.quiz-public-banner .return {
+    display: inline-block;
+    margin-bottom: 16px;
+}
+
+.quiz-banner .return,
+.quiz-public-banner .return {
     background: var(--pill-bg);
     color: var(--text-strong);
     text-decoration: none;
@@ -665,7 +671,8 @@ select {
     transition: background-color 0.3s;
 }
 
-.quiz-banner .return:hover {
+.quiz-banner .return:hover,
+.quiz-public-banner .return:hover {
     background-color: var(--pill-hover);
 }
 
@@ -1621,6 +1628,12 @@ body.dark-mode .new-answer-correct:has(input:checked) {
 
 /* Réponses */
 
+.quiz-choice-hint {
+    margin: 0 0 12px;
+    color: var(--text-muted);
+    font-size: 15px;
+}
+
 .quiz-choices {
     display: flex;
     flex-direction: column;
@@ -1651,7 +1664,8 @@ body.dark-mode .new-answer-correct:has(input:checked) {
     border-color: var(--accent);
 }
 
-.quiz-choice input[type="radio"] {
+.quiz-choice input[type="radio"],
+.quiz-choice input[type="checkbox"] {
     position: absolute;
     opacity: 0;
     width: 1px;
