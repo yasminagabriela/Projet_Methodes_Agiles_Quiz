@@ -28,6 +28,13 @@ if (!$quiz) {
     exit;
 }
 
+// Le formulaire a été envoyé (après la confirmation) : retour à l'accueil
+// (l'enregistrement des réponses et le calcul du score restent à faire)
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    header('Location: index.php?soumis=1');
+    exit;
+}
+
 // Récupérer les questions du quiz
 $stmt = $pdo->prepare("
     SELECT id, enonce, type
@@ -72,7 +79,7 @@ $nbQuestions = count($questions);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($quiz['titre']) ?> | Qivvi</title>
-    <link rel="stylesheet" href="css/styles.css?v=10">
+    <link rel="stylesheet" href="css/styles.css?v=11">
     <link rel="icon" type="image/png" href="images/icon.png">
 </head>
 
@@ -130,11 +137,70 @@ $nbQuestions = count($questions);
                 </form>
             <?php endif; ?>
         </section>
+
+        <!-- Boîte de confirmation avant l'envoi des réponses -->
+        <dialog id="soumettre-dialog" class="confirm-dialog" aria-labelledby="soumettre-titre">
+            <form method="dialog">
+                <h3 id="soumettre-titre">Soumettre vos réponses ?</h3>
+                <p id="soumettre-message"></p>
+
+                <div class="confirm-actions">
+                    <button type="submit" value="annuler" class="confirm-cancel">Annuler</button>
+                    <button type="submit" value="envoyer" class="confirm-envoyer">Soumettre</button>
+                </div>
+            </form>
+        </dialog>
     </main>
 
     <?php include __DIR__ . '/includes/footer.php'; ?>
 
     <script src="js/script.js"></script>
+
+    <script>
+        const formulaireQuiz = document.getElementById('quiz-public-form');
+        const dialogueSoumettre = document.getElementById('soumettre-dialog');
+
+        if (formulaireQuiz) {
+            formulaireQuiz.addEventListener('submit', function (e) {
+                // On bloque l'envoi pour d'abord demander la confirmation
+                e.preventDefault();
+
+                // Compter les questions qui ont au moins une réponse cochée
+                const total = formulaireQuiz.querySelectorAll('.quiz-question-card').length;
+                let repondues = 0;
+                formulaireQuiz.querySelectorAll('.quiz-question-card').forEach(function (carte) {
+                    if (carte.querySelector('input:checked')) {
+                        repondues++;
+                    }
+                });
+
+                let message = 'Vous avez répondu à ' + repondues + ' question'
+                    + (repondues > 1 ? 's' : '') + ' sur ' + total + '.';
+                if (repondues < total) {
+                    message += ' Certaines questions sont sans réponse.';
+                }
+                message += ' Une fois envoyées, vos réponses ne pourront plus être modifiées.';
+
+                document.getElementById('soumettre-message').textContent = message;
+                dialogueSoumettre.returnValue = '';   // sinon Échap garderait la valeur du dernier clic
+                dialogueSoumettre.showModal();
+            });
+
+            // Fermeture de la boîte : on envoie seulement si l'étudiant a cliqué « Soumettre »
+            dialogueSoumettre.addEventListener('close', function () {
+                if (dialogueSoumettre.returnValue === 'envoyer') {
+                    formulaireQuiz.submit();   // submit() ne redéclenche pas l'événement 'submit'
+                }
+            });
+
+            // Cliquer en dehors de la boîte = annuler
+            dialogueSoumettre.addEventListener('click', function (e) {
+                if (e.target === dialogueSoumettre) {
+                    dialogueSoumettre.close();
+                }
+            });
+        }
+    </script>
 </body>
 
 </html>

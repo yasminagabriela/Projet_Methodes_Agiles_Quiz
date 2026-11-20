@@ -40,7 +40,7 @@ if ($estEnseignant) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Qivvi</title>
-    <link rel="stylesheet" href="css/styles.css?v=2">
+    <link rel="stylesheet" href="css/styles.css?v=11">
     <link rel="icon" type="image/png" href="images/icon.png">
 </head>
 
@@ -110,6 +110,10 @@ if ($estEnseignant) {
                 <h1>Bonjour, <?= htmlspecialchars($_SESSION['username']); ?></h1>
                 <p>Choisissez un quiz pour commencer.</p>
             </section>
+
+            <?php if (isset($_GET['soumis'])): ?>
+                <p class="message-succes">Vos réponses ont bien été envoyées. Merci !</p>
+            <?php endif; ?>
 
             <h2>Quiz disponibles</h2>
             <!-- Liste des quiz -->
