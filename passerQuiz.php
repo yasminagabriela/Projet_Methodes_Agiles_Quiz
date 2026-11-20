@@ -148,6 +148,9 @@ $nbQuestions = count($questions);
                         </fieldset>
                     <?php endforeach; ?>
 
+                    <p id="quiz-erreur" class="quiz-error" hidden>
+                        Veuillez répondre à toutes les questions avant de soumettre le quiz.
+                    </p>
                     <button type="submit" class="quiz-submit-btn">Soumettre mes réponses</button>
                 </form>
             <?php endif; ?>
@@ -177,10 +180,10 @@ $nbQuestions = count($questions);
 
         if (formulaireQuiz) {
             // Barre de progression : se met à jour à chaque réponse cochée ou décochée
-            formulaireQuiz.addEventListener('change', function () {
+            formulaireQuiz.addEventListener('change', function() {
                 const cartes = formulaireQuiz.querySelectorAll('.quiz-question-card');
                 let repondues = 0;
-                cartes.forEach(function (carte) {
+                cartes.forEach(function(carte) {
                     if (carte.querySelector('input:checked')) {
                         repondues++;
                     }
@@ -192,40 +195,53 @@ $nbQuestions = count($questions);
                     (repondues / cartes.length * 100) + '%';
             });
 
-            formulaireQuiz.addEventListener('submit', function (e) {
+            formulaireQuiz.addEventListener('submit', function(e) {
                 // On bloque l'envoi pour d'abord demander la confirmation
                 e.preventDefault();
 
                 // Compter les questions qui ont au moins une réponse cochée
-                const total = formulaireQuiz.querySelectorAll('.quiz-question-card').length;
+                const cartes = formulaireQuiz.querySelectorAll('.quiz-question-card');
                 let repondues = 0;
-                formulaireQuiz.querySelectorAll('.quiz-question-card').forEach(function (carte) {
+
+                // Vérifier chaque question
+                cartes.forEach(function(carte) {
                     if (carte.querySelector('input:checked')) {
                         repondues++;
                     }
                 });
 
-                let message = 'Vous avez répondu à ' + repondues + ' question'
-                    + (repondues > 1 ? 's' : '') + ' sur ' + total + '.';
+                const total = cartes.length;
+                const erreur = document.getElementById('quiz-erreur');
+
+                // Vérifier si toutes les questions ont une réponse
                 if (repondues < total) {
-                    message += ' Certaines questions sont sans réponse.';
+                    erreur.hidden = false;
+                    return;
                 }
+
+                // Toutes les quetions sont répondues
+                erreur.hidden = true;
+
+                let message = 'Vous avez répondu à ' + repondues + ' question' +
+                    (repondues > 1 ? 's' : '') + ' sur ' + total + '.';
+
                 message += ' Une fois envoyées, vos réponses ne pourront plus être modifiées.';
 
                 document.getElementById('soumettre-message').textContent = message;
-                dialogueSoumettre.returnValue = '';   // sinon Échap garderait la valeur du dernier clic
+
+                dialogueSoumettre.returnValue = '';
                 dialogueSoumettre.showModal();
             });
 
             // Fermeture de la boîte : on envoie seulement si l'étudiant a cliqué « Soumettre »
-            dialogueSoumettre.addEventListener('close', function () {
+            dialogueSoumettre.addEventListener('close', function() {
                 if (dialogueSoumettre.returnValue === 'envoyer') {
-                    formulaireQuiz.submit();   // submit() ne redéclenche pas l'événement 'submit'
+                    formulaireQuiz.submit(); // submit() ne redéclenche pas l'événement 'submit'
                 }
             });
 
             // Cliquer en dehors de la boîte = annuler
-            dialogueSoumettre.addEventListener('click', function (e) {
+            dialogueSoumettre.addEventListener('click', function(e) {
                 if (e.target === dialogueSoumettre) {
                     dialogueSoumettre.close();
                 }
