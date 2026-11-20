@@ -307,9 +307,8 @@ $nbQuestions = count($questions);
                 </div>
             </template>
 
-            <button type="button" class="add-question">+ Ajouter une question</button>
-
             <?php if ($quizId === 0): ?>
+                <button type="button" class="add-question">+ Ajouter une question</button>
                 <button type="button" id="save-quiz">Enregistrer le quiz</button>
             <?php endif; ?>
 
