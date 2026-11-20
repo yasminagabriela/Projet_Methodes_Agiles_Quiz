@@ -14,8 +14,30 @@ $title = trim($_POST['title'] ?? '');
 $description = '';
 $questions = [];
 
+// Publier le quiz
+if (
+    $_SERVER['REQUEST_METHOD'] === 'POST'
+    && ($_POST['action'] ?? '') === 'publier'
+    && $quizId > 0
+) {
+    $stmt = $pdo->prepare("
+        UPDATE quiz
+        SET statut = 'publie'
+        WHERE id = ? AND user_id = ?
+    ");
+
+    $stmt->execute([$quizId, $_SESSION['user_id']]);
+
+    header('Location: quiz.php?id=' . $quizId);
+    exit;
+}
+
 // Enregistrer les paramètres du quiz
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && $quizId > 0) {
+if (
+    $_SERVER['REQUEST_METHOD'] === 'POST'
+    && !isset($_POST['action'])
+    && $quizId > 0
+) {
     $newTitle = trim($_POST['title'] ?? '');
     $newDescr = trim($_POST['description'] ?? '');
 
@@ -85,7 +107,9 @@ $nbQuestions = count($questions);
         <section class="quiz-banner">
             <div class="quiz-banner-top">
                 <a href="index.php" class="return">‹ Mes quiz</a>
-                <button type="button" class="delete">Supprimer le quiz</button>
+                <?php if ($quizId > 0): ?>
+                    <button type="button" class="delete" id="supprimer-quiz" data-id="<?= $quizId ?>">Supprimer le quiz</button>
+                <?php endif; ?>
             </div>
 
             <h1><?= htmlspecialchars($title) ?></h1>
@@ -110,7 +134,10 @@ $nbQuestions = count($questions);
                         pour le rendre accessible aux étudiants.
                     </p>
                 </div>
-                <button type="button">Publier le quiz</button>
+                <form method="post">
+                    <input type="hidden" name="action" value="publier">
+                    <button type="submit">Publier le quiz</button>
+                </form>
             </section>
         <?php elseif ($quizId > 0 && $quiz['statut'] === 'publie'): ?>
             <section class="quiz-publication">
@@ -190,7 +217,7 @@ $nbQuestions = count($questions);
             <!-- Les questions ajoutées apparaissent ici -->
             <div id="questions-list">
                 <?php foreach ($questions as $i => $q): ?>
-                    <div class="question-block">
+                    <div class="question-block" data-id="<?= (int) $q['id'] ?>">
                         <div class="question-header">
                             <span class="q-numero"><?= $i + 1 ?></span>
                             <h4 class="q-enonce"><?= htmlspecialchars($q['enonce']) ?></h4>
@@ -207,6 +234,10 @@ $nbQuestions = count($questions);
                                     <?php endif; ?>
                                 </div>
                             <?php endforeach; ?>
+                        </div>
+                            <div class="question-actions">
+                            <a href="modifierQuestions.php?id=<?= (int) $q['id'] ?>" class="q-editer">Modifier</a>
+                            <button type="button" class="q-supprimer">Supprimer</button>
                         </div>
                     </div>
                 <?php endforeach; ?>
@@ -266,11 +297,24 @@ $nbQuestions = count($questions);
             <?php endif; ?>
 
         </section>
+
+            <!-- Boîte de confirmation avant une suppression -->
+        <dialog id="confirm-dialog" class="confirm-dialog" aria-labelledby="confirm-title">
+            <form method="dialog">
+                <h3 id="confirm-title">Supprimer ?</h3>
+                <p id="confirm-message"></p>
+
+                <div class="confirm-actions">
+                    <button type="submit" value="annuler" class="confirm-cancel">Annuler</button>
+                    <button type="submit" value="supprimer" class="confirm-delete">Supprimer</button>
+                </div>
+            </form>
+        </dialog>
     </main>
 
     <?php include __DIR__ . '/includes/footer.php'; ?>
 
-    <script src="js/script.js?v=3"></script>
+    <script src="js/script.js?v=4"></script>
 </body>
 
 </html>
