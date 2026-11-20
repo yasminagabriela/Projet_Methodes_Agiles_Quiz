@@ -10,9 +10,11 @@ if ($estEnseignant) {
     $stmt = $pdo->prepare("SELECT id, titre, description, statut FROM quiz WHERE user_id = ? ORDER BY id DESC");
     $stmt->execute([$_SESSION['user_id']]);
 } else {
+    // Les étudiants ne voient que les quiz publiés
     $stmt = $pdo->query("
     SELECT id, titre, description
     FROM quiz
+    WHERE statut = 'publie'
     ORDER BY id DESC
 ");
 }

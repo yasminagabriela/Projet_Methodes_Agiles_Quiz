@@ -13,16 +13,16 @@ if (($_SESSION['role'] ?? '') !== 'etudiant') {
 // Récupérer l'identifiant du quiz
 $quizId = isset($_GET['id']) ? (int) $_GET['id'] : 0;
 
-// Récupérer le quiz
+// Récupérer le quiz : seulement s'il est publié
 $stmt = $pdo->prepare("
     SELECT id, titre, description
     FROM quiz
-    WHERE id = ?
+    WHERE id = ? AND statut = 'publie'
 ");
 $stmt->execute([$quizId]);
 $quiz = $stmt->fetch(PDO::FETCH_ASSOC);
 
-// Vérifier que le quiz existe
+// Quiz inexistant ou non publié : retour à l'accueil
 if (!$quiz) {
     header('Location: index.php');
     exit;
@@ -37,6 +37,32 @@ $stmt = $pdo->prepare("
 ");
 $stmt->execute([$quizId]);
 $questions = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Récupérer les réponses de chaque question.
+// On ne lit jamais est_correcte dans la page : seulement le nombre de bonnes
+// réponses, pour savoir si l'étudiant peut en cocher une ou plusieurs.
+$stmtReponses = $pdo->prepare("
+    SELECT id, texte
+    FROM reponses
+    WHERE question_id = ?
+    ORDER BY id
+");
+$stmtNbCorrectes = $pdo->prepare("
+    SELECT COUNT(*)
+    FROM reponses
+    WHERE question_id = ? AND est_correcte = 1
+");
+
+foreach ($questions as &$q) {
+    $stmtReponses->execute([$q['id']]);
+    $q['reponses'] = $stmtReponses->fetchAll(PDO::FETCH_ASSOC);
+
+    $stmtNbCorrectes->execute([$q['id']]);
+    $q['plusieurs'] = (int) $stmtNbCorrectes->fetchColumn() > 1;
+}
+unset($q);
+
+$nbQuestions = count($questions);
 ?>
 
 <!DOCTYPE html>
@@ -52,36 +78,58 @@ $questions = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <body>
     <?php include __DIR__ . '/includes/header.php'; ?>
-    <main class="quiz-details">
-        <section class="quiz-banner">
-            <div class="quiz-banner-top">
-                <a href="index.php" class="return">Retour aux quiz</a>
-            </div>
+
+    <main class="quiz-public-page">
+        <!-- Bannière du quiz -->
+        <section class="quiz-public-banner">
+            <a href="index.php" class="return">‹ Retour aux quiz</a>
             <h1><?= htmlspecialchars($quiz['titre']) ?></h1>
             <p><?= htmlspecialchars($quiz['description'] ?? '') ?></p>
+
+            <div class="quiz-public-info">
+                <span><?= $nbQuestions ?> question<?= $nbQuestions > 1 ? 's' : '' ?></span>
+            </div>
         </section>
 
-        <h2>Questions du quiz</h2>
-        <?php if (empty($questions)): ?>
-            <p>Aucune question dans ce quiz pour le moment.</p>
-        <?php else: ?>
-            <form method="post">
-            <?php foreach ($questions as $i => $q): ?>
-                <div class="question-block">
-                    <div class="question-header">
-                        <span class="q-numero"><?= $i + 1 ?></span>
-                        <h3 class="q-enonce">
-                            <?= htmlspecialchars($q['enonce']) ?>
-                        </h3>
-                        <span class="q-type">
-                            <?= $q['type'] === 'choix_multiple' ? 'QCM' : 'Vrai/Faux' ?>
-                        </span>
-                    </div>
-                </div>
-            <?php endforeach; ?>
-            <button type="submit" class="soumettre-quiz">Soumettre le quiz</button>
-            </form>
-        <?php endif; ?>
+        <!-- Questions -->
+        <section class="quiz-public-content">
+            <?php if ($nbQuestions === 0): ?>
+                <p>Aucune question dans ce quiz pour le moment.</p>
+            <?php else: ?>
+                <form method="post" id="quiz-public-form">
+                    <?php foreach ($questions as $i => $q): ?>
+                        <fieldset class="quiz-question-card">
+                            <legend class="quiz-sr-only">Question <?= $i + 1 ?></legend>
+
+                            <div class="quiz-question-header">
+                                <span class="quiz-question-number"><?= $i + 1 ?></span>
+                                <h3><?= htmlspecialchars($q['enonce']) ?></h3>
+                            </div>
+
+                            <?php if ($q['plusieurs']): ?>
+                                <p class="quiz-choice-hint">Plusieurs réponses possibles</p>
+                            <?php endif; ?>
+
+                            <div class="quiz-choices">
+                                <?php foreach ($q['reponses'] as $j => $r): ?>
+                                    <label class="quiz-choice">
+                                        <input
+                                            type="<?= $q['plusieurs'] ? 'checkbox' : 'radio' ?>"
+                                            name="reponses[<?= (int) $q['id'] ?>][]"
+                                            value="<?= (int) $r['id'] ?>">
+
+                                        <span class="quiz-choice-letter"><?= chr(65 + $j) ?></span>
+                                        <span class="quiz-choice-text"><?= htmlspecialchars($r['texte']) ?></span>
+                                    </label>
+                                <?php endforeach; ?>
+                            </div>
+                        </fieldset>
+                    <?php endforeach; ?>
+
+                    <button type="submit" class="quiz-submit-btn">Soumettre mes réponses</button>
+                </form>
+            <?php endif; ?>
+        </section>
     </main>
 
     <?php include __DIR__ . '/includes/footer.php'; ?>
