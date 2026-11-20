@@ -95,8 +95,23 @@ $nbQuestions = count($questions);
 
             <div class="quiz-public-info">
                 <span><?= $nbQuestions ?> question<?= $nbQuestions > 1 ? 's' : '' ?></span>
+                <span>1 seule tentative</span>
             </div>
         </section>
+
+        <!-- Progression -->
+        <?php if ($nbQuestions > 0): ?>
+            <section class="quiz-progress">
+                <div class="quiz-progress-header">
+                    <h2>Votre progression</h2>
+                    <span id="progress-text">0 / <?= $nbQuestions ?> réponses</span>
+                </div>
+
+                <div class="quiz-progress-bar">
+                    <div id="progress-fill"></div>
+                </div>
+            </section>
+        <?php endif; ?>
 
         <!-- Questions -->
         <section class="quiz-public-content">
@@ -161,6 +176,22 @@ $nbQuestions = count($questions);
         const dialogueSoumettre = document.getElementById('soumettre-dialog');
 
         if (formulaireQuiz) {
+            // Barre de progression : se met à jour à chaque réponse cochée ou décochée
+            formulaireQuiz.addEventListener('change', function () {
+                const cartes = formulaireQuiz.querySelectorAll('.quiz-question-card');
+                let repondues = 0;
+                cartes.forEach(function (carte) {
+                    if (carte.querySelector('input:checked')) {
+                        repondues++;
+                    }
+                });
+
+                document.getElementById('progress-text').textContent =
+                    repondues + ' / ' + cartes.length + ' réponses';
+                document.getElementById('progress-fill').style.width =
+                    (repondues / cartes.length * 100) + '%';
+            });
+
             formulaireQuiz.addEventListener('submit', function (e) {
                 // On bloque l'envoi pour d'abord demander la confirmation
                 e.preventDefault();
