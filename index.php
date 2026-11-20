@@ -122,7 +122,7 @@ if ($estEnseignant) {
             <?php else: ?>
                 <div class="quiz-list">
                     <?php foreach ($quizList as $q): ?>
-                        <a class="quiz-card" href="quiz_public.php?id=<?= (int) $q['id'] ?>">
+                        <a class="quiz-card" href="passerQuiz.php?id=<?= (int) $q['id'] ?>">
                             <h3><?= htmlspecialchars($q['titre']) ?></h3>
                             <p><?= htmlspecialchars($q['description'] ?? '') ?></p>
                         </a>

@@ -1,4 +1,8 @@
 <?php
+// Afficher les erreurs pendant le développement
+ini_set('display_errors', '1');
+error_reporting(E_ALL);
+
 require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/includes/db.php';
 
@@ -13,7 +17,7 @@ if (($_SESSION['role'] ?? '') !== 'etudiant') {
 // Récupérer l'identifiant du quiz
 $quizId = isset($_GET['id']) ? (int) $_GET['id'] : 0;
 
-// Récupérer le quiz : seulement s'il est publié
+// Récupérer le quiz publié
 $stmt = $pdo->prepare("
     SELECT id, titre, description
     FROM quiz
@@ -22,20 +26,105 @@ $stmt = $pdo->prepare("
 $stmt->execute([$quizId]);
 $quiz = $stmt->fetch(PDO::FETCH_ASSOC);
 
-// Quiz inexistant ou non publié : retour à l'accueil
+// Vérifier si le quiz existe
 if (!$quiz) {
     header('Location: index.php');
     exit;
 }
 
-// Le formulaire a été envoyé (après la confirmation) : retour à l'accueil
-// (l'enregistrement des réponses et le calcul du score restent à faire)
+// Le formulaire a été envoyé
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    header('Location: index.php?soumis=1');
+
+    // Récupérer le titre du quiz
+    $quizTitre = $quiz['titre'];
+
+    // Récupérer les questions
+    $stmtQuestions = $pdo->prepare("
+        SELECT id, enonce, type
+        FROM questions
+        WHERE quiz_id = ?
+        ORDER BY id
+    ");
+    $stmtQuestions->execute([$quizId]);
+    $questionsResultats = $stmtQuestions->fetchAll(PDO::FETCH_ASSOC);
+
+    $score = 0;
+    $total = count($questionsResultats);
+    $correction = [];
+
+    // Récupérer les réponses de chaque question
+    $stmtReponses = $pdo->prepare("
+        SELECT id, texte, est_correcte
+        FROM reponses
+        WHERE question_id = ?
+        ORDER BY id
+    ");
+
+    foreach ($questionsResultats as $question) {
+
+        $stmtReponses->execute([$question['id']]);
+        $reponsesQuestion = $stmtReponses->fetchAll(PDO::FETCH_ASSOC);
+
+        // Réponses sélectionnées par l'étudiant
+        $choisies = $_POST['reponses'][$question['id']] ?? [];
+
+        if (!is_array($choisies)) {
+            $choisies = [];
+        }
+
+        $choisies = array_map('intval', $choisies);
+
+        // Garder uniquement les réponses appartenant à cette question
+        $idsDisponibles = array_map('intval', array_column($reponsesQuestion, 'id'));
+        $choisies = array_values(array_intersect($choisies, $idsDisponibles));
+
+        // Trouver les bonnes réponses
+        $correctes = [];
+
+        foreach ($reponsesQuestion as $reponse) {
+            if ($reponse['est_correcte']) {
+                $correctes[] = (int) $reponse['id'];
+            }
+        }
+
+        // Comparer les réponses sélectionnées aux bonnes réponses
+        sort($choisies);
+        sort($correctes);
+
+        $estCorrecte = $choisies === $correctes;
+
+        if ($estCorrecte) {
+            $score++;
+        }
+
+        $correction[] = [
+            'question' => $question['enonce'],
+            'choisie' => $choisies,
+            'correcte' => $correctes,
+            'reponses' => $reponsesQuestion,
+            'est_correcte' => $estCorrecte
+        ];
+    }
+
+    // Calculer le pourcentage
+    $pourcentage = $total > 0
+        ? round(($score / $total) * 100)
+        : 0;
+
+    // Conserver les résultats pour la page de confirmation
+    $_SESSION['quiz_resultats'] = [
+        'quizTitre' => $quizTitre,
+        'score' => $score,
+        'total' => $total,
+        'pourcentage' => $pourcentage,
+        'correction' => $correction
+    ];
+
+    header('Location: confirmationQuiz.php');
     exit;
 }
 
-// Récupérer les questions du quiz
+// Récupérer les questions pour l'affichage
 $stmt = $pdo->prepare("
     SELECT id, enonce, type
     FROM questions
@@ -45,30 +134,23 @@ $stmt = $pdo->prepare("
 $stmt->execute([$quizId]);
 $questions = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Récupérer les réponses de chaque question.
-// On ne lit jamais est_correcte dans la page : seulement le nombre de bonnes
-// réponses, pour savoir si l'étudiant peut en cocher une ou plusieurs.
+// Récupérer les réponses de chaque question
 $stmtReponses = $pdo->prepare("
     SELECT id, texte
     FROM reponses
     WHERE question_id = ?
     ORDER BY id
 ");
-$stmtNbCorrectes = $pdo->prepare("
-    SELECT COUNT(*)
-    FROM reponses
-    WHERE question_id = ? AND est_correcte = 1
-");
 
-foreach ($questions as &$q) {
-    $stmtReponses->execute([$q['id']]);
-    $q['reponses'] = $stmtReponses->fetchAll(PDO::FETCH_ASSOC);
+foreach ($questions as &$question) {
+    $stmtReponses->execute([$question['id']]);
+    $question['reponses'] = $stmtReponses->fetchAll(PDO::FETCH_ASSOC);
 
-    $stmtNbCorrectes->execute([$q['id']]);
-    $q['plusieurs'] = (int) $stmtNbCorrectes->fetchColumn() > 1;
+    $question['plusieurs'] = $question['type'] === 'choix_multiple';
 }
-unset($q);
+unset($question);
 
+// Nombre de questions
 $nbQuestions = count($questions);
 ?>
 
@@ -78,24 +160,25 @@ $nbQuestions = count($questions);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= htmlspecialchars($quiz['titre']) ?> | Qivvi</title>
-    <link rel="stylesheet" href="css/styles.css?v=11">
+    <title><?= htmlspecialchars($quiz['titre']) ?> - Qivvi</title>
+    <link rel="stylesheet" href="css/styles.css?v=3">
     <link rel="icon" type="image/png" href="images/icon.png">
 </head>
 
 <body>
+
     <?php include __DIR__ . '/includes/header.php'; ?>
 
     <main class="quiz-public-page">
+
         <!-- Bannière du quiz -->
         <section class="quiz-public-banner">
-            <a href="index.php" class="return">‹ Retour aux quiz</a>
             <h1><?= htmlspecialchars($quiz['titre']) ?></h1>
             <p><?= htmlspecialchars($quiz['description'] ?? '') ?></p>
 
             <div class="quiz-public-info">
                 <span><?= $nbQuestions ?> question<?= $nbQuestions > 1 ? 's' : '' ?></span>
-                <span>1 seule tentative</span>
+                <!-- <span>1 seule tentative</span> -->
             </div>
         </section>
 
@@ -119,29 +202,29 @@ $nbQuestions = count($questions);
                 <p>Aucune question dans ce quiz pour le moment.</p>
             <?php else: ?>
                 <form method="post" id="quiz-public-form">
-                    <?php foreach ($questions as $i => $q): ?>
+                    <?php foreach ($questions as $index => $question): ?>
                         <fieldset class="quiz-question-card">
-                            <legend class="quiz-sr-only">Question <?= $i + 1 ?></legend>
+                            <legend class="quiz-sr-only">Question <?= $index + 1 ?></legend>
 
                             <div class="quiz-question-header">
-                                <span class="quiz-question-number"><?= $i + 1 ?></span>
-                                <h3><?= htmlspecialchars($q['enonce']) ?></h3>
+                                <span class="quiz-question-number"><?= $index + 1 ?></span>
+                                <h3><?= htmlspecialchars($question['enonce']) ?></h3>
                             </div>
 
-                            <?php if ($q['plusieurs']): ?>
+                            <?php if ($question['plusieurs']): ?>
                                 <p class="quiz-choice-hint">Plusieurs réponses possibles</p>
                             <?php endif; ?>
 
                             <div class="quiz-choices">
-                                <?php foreach ($q['reponses'] as $j => $r): ?>
+                                <?php foreach ($question['reponses'] as $choixIndex => $reponse): ?>
                                     <label class="quiz-choice">
                                         <input
-                                            type="<?= $q['plusieurs'] ? 'checkbox' : 'radio' ?>"
-                                            name="reponses[<?= (int) $q['id'] ?>][]"
-                                            value="<?= (int) $r['id'] ?>">
+                                            type="<?= $question['plusieurs'] ? 'checkbox' : 'radio' ?>"
+                                            name="reponses[<?= (int) $question['id'] ?>][]"
+                                            value="<?= (int) $reponse['id'] ?>">
 
-                                        <span class="quiz-choice-letter"><?= chr(65 + $j) ?></span>
-                                        <span class="quiz-choice-text"><?= htmlspecialchars($r['texte']) ?></span>
+                                        <span class="quiz-choice-letter"><?= chr(65 + $choixIndex) ?></span>
+                                        <span class="quiz-choice-text"><?= htmlspecialchars($reponse['texte']) ?></span>
                                     </label>
                                 <?php endforeach; ?>
                             </div>
@@ -191,15 +274,12 @@ $nbQuestions = count($questions);
                     }
                 });
 
-                document.getElementById('progress-text').textContent =
-                    repondues + ' / ' + cartes.length + ' réponses';
-
-                document.getElementById('progress-fill').style.width =
-                    (repondues / cartes.length * 100) + '%';
+                document.getElementById('progress-text').textContent = repondues + ' / ' + cartes.length + ' réponses';
+                document.getElementById('progress-fill').style.width = (repondues / cartes.length * 100) + '%';
             });
 
             formulaireQuiz.addEventListener('submit', function(e) {
-                
+
                 // On bloque l'envoi pour d'abord demander la confirmation
                 e.preventDefault();
 
@@ -223,7 +303,7 @@ $nbQuestions = count($questions);
                     return;
                 }
 
-                // Toutes les quetions sont répondues
+                // Toutes les questions sont répondues
                 erreur.hidden = true;
 
                 let message = 'Vous avez répondu à ' + repondues + ' question' +
@@ -240,7 +320,7 @@ $nbQuestions = count($questions);
             // Fermeture de la boîte : on envoie seulement si l'étudiant a cliqué « Soumettre »
             dialogueSoumettre.addEventListener('close', function() {
                 if (dialogueSoumettre.returnValue === 'envoyer') {
-                    formulaireQuiz.submit(); // submit() ne redéclenche pas l'événement 'submit'
+                    formulaireQuiz.submit();
                 }
             });
 
@@ -252,6 +332,7 @@ $nbQuestions = count($questions);
             });
         }
     </script>
+
 </body>
 
 </html>
