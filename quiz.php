@@ -251,8 +251,8 @@ $nbQuestions = count($questions);
                                 </div>
                             <?php endforeach; ?>
                         </div>
-                            <div class="question-actions">
-                            <a href="modifierQuestions.php?id=<?= (int) $q['id'] ?>" class="q-editer">Modifier</a>
+                        <div class="question-actions">
+                            <a href="modifierQuestion.php?id=<?= (int) $q['id'] ?>" class="q-editer">Modifier</a>
                             <button type="button" class="q-supprimer">Supprimer</button>
                         </div>
                     </div>
@@ -307,14 +307,15 @@ $nbQuestions = count($questions);
                 </div>
             </template>
 
+            <button type="button" class="add-question">+ Ajouter une question</button>
+
             <?php if ($quizId === 0): ?>
-                <button type="button" class="add-question">+ Ajouter une question</button>
                 <button type="button" id="save-quiz">Enregistrer le quiz</button>
             <?php endif; ?>
 
         </section>
 
-            <!-- Boîte de confirmation avant une suppression -->
+        <!-- Boîte de confirmation avant une suppression -->
         <dialog id="confirm-dialog" class="confirm-dialog" aria-labelledby="confirm-title">
             <form method="dialog">
                 <h3 id="confirm-title">Supprimer ?</h3>

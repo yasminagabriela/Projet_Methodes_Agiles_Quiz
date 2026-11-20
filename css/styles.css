@@ -1278,8 +1278,8 @@ select {
 }
 
 .new-answer-text[readonly] {
-    background: transparent;
-    border: none;
+    cursor: default;
+    user-select: none;
 }
 
 /* Sélection de la bonne réponse */

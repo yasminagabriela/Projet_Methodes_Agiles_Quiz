@@ -226,7 +226,7 @@ if (boutonAjouterQuestion && listeQuestions) {
     });
 
     // Un seul écouteur pour les boutons de toutes les questions, même celles ajoutées plus tard
-        listeQuestions.addEventListener("click", async function (e) {
+    listeQuestions.addEventListener("click", async function (e) {
         const bloc = e.target.closest(".question-block");
         if (!bloc) return;
 
@@ -286,7 +286,12 @@ function creerReponse(texte = "", numero = 0, vraiFaux = false) {
 
     ligne.innerHTML = `
         <span class="new-answer-letter">${lettre}</span>
-        <input type="text" class="new-answer-text" placeholder="Réponse ${numero + 1}">
+        <input 
+            type="text" 
+            class="new-answer-text" 
+            placeholder="Réponse ${numero + 1}"
+            ${vraiFaux ? 'readonly' : ''}
+        >
         <label class="new-answer-correct">
             <input type="${vraiFaux ? 'radio' : 'checkbox'}" name="new-correct-answer">
             Bonne réponse
@@ -294,12 +299,15 @@ function creerReponse(texte = "", numero = 0, vraiFaux = false) {
     `;
 
     const champ = ligne.querySelector(".new-answer-text");
+
+    if (vraiFaux) {
+        champ.onmousedown = (e) => e.preventDefault();
+    }
     const choixCorrect = ligne.querySelector(".new-answer-correct input");
 
     champ.value = texte;
 
     if (vraiFaux) {
-        champ.readOnly = true;
         choixCorrect.checked = numero === 0;
     }
 
@@ -438,7 +446,7 @@ if (listeQuestions && panneauQuestion && boutonAjouterLaQuestion && boutonAnnule
         q.reponses.forEach(function (r, i) {
             creerReponse(r.texte, i, q.type === "vrai_faux");
         });
-        
+
         reponsesQuestion.querySelectorAll(".new-answer-correct input").forEach(function (choix, i) {
             choix.checked = q.reponses[i].est_correcte;
         });
@@ -566,7 +574,7 @@ if (listeQuestions) {
         e.target.disabled = false;
     });
 }
-/* Page d'édition d'une question (modifierQuestions.php) */
+/* Page d'édition d'une question (modifierQuestion.php) */
 const panneauEdition = document.getElementById("edit-question-panel");
 
 if (panneauEdition) {
@@ -585,7 +593,7 @@ if (panneauEdition) {
     question.reponses.forEach(function (r, i) {
         creerReponse(r.texte, i, question.type === "vrai_faux");
     });
-          reponsesQuestion.querySelectorAll(".new-answer-correct input").forEach(function (radio, i) {
+    reponsesQuestion.querySelectorAll(".new-answer-correct input").forEach(function (radio, i) {
         radio.checked = question.reponses[i].est_correcte;
     });
     if (question.type === "choix_multiple") {
@@ -623,7 +631,7 @@ if (panneauEdition) {
         boutonEnregistrer.disabled = true;   // évite un double envoi
 
         try {
-            const res = await fetch("includes/modifierQuestion.php", {
+            const res = await fetch("includes/enregistrerQuestion.php", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ id: question.id, enonce: enonce, type: type, reponses: reponses }),
