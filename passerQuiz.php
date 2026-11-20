@@ -65,6 +65,7 @@ $questions = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <?php if (empty($questions)): ?>
             <p>Aucune question dans ce quiz pour le moment.</p>
         <?php else: ?>
+            <form method="post">
             <?php foreach ($questions as $i => $q): ?>
                 <div class="question-block">
                     <div class="question-header">
@@ -78,6 +79,8 @@ $questions = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     </div>
                 </div>
             <?php endforeach; ?>
+            <button type="submit" class="soumettre-quiz">Soumettre le quiz</button>
+            </form>
         <?php endif; ?>
     </main>
 
