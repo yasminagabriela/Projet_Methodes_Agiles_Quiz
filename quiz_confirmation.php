@@ -1,10 +1,26 @@
-
 <?php
-// Données temporaires pour tester l'interface
-// À remplacer par les résultats du backend.
-$quizTitre = "Quiz Scrum";
-$score = 1;
-$total = 2;
+require_once __DIR__ . '/includes/auth.php';
+require_login();
+
+// Page réservée aux étudiants
+if (($_SESSION['role'] ?? '') !== 'etudiant') {
+    header('Location: index.php');
+    exit;
+}
+
+// Résultat calculé par passerQuiz.php au moment de la soumission
+$resultat = $_SESSION['resultat'] ?? null;
+
+// Aucun quiz soumis : retour à l'accueil
+if (!$resultat) {
+    header('Location: index.php');
+    exit;
+}
+
+$quizTitre = $resultat['quizTitre'];
+$score = $resultat['score'];
+$total = $resultat['total'];
+$correction = $resultat['correction'];
 
 $pourcentage = $total > 0
     ? round(($score / $total) * 100)
@@ -18,29 +34,6 @@ $message = $pourcentage >= 80
 
 $circonference = 2 * pi() * 54;
 $progression = $circonference * $pourcentage / 100;
-
-$correction = [
-    [
-        'question' => 'Qui facilite le travail de l’équipe Scrum ?',
-        'choisie' => 0,
-        'correcte' => 0,
-        'reponses' => [
-            'Le Scrum Master',
-            'Le client',
-            'Le développeur principal'
-        ]
-    ],
-    [
-        'question' => 'Quel événement permet de planifier le sprint ?',
-        'choisie' => 0,
-        'correcte' => 1,
-        'reponses' => [
-            'La Sprint Review',
-            'Le Sprint Planning',
-            'La rétrospective'
-        ]
-    ]
-];
 ?>
 
 <!DOCTYPE html>
@@ -49,7 +42,8 @@ $correction = [
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Confirmation du quiz - Qivvi</title>
-    <link rel="stylesheet" href="css/styles.css?v=9">
+    <link rel="stylesheet" href="css/styles.css?v=11">
+    <link rel="icon" type="image/png" href="images/icon.png">
 </head>
 <body>
 
@@ -97,7 +91,7 @@ $correction = [
         <?php foreach ($correction as $index => $question): ?>
 
             <?php
-            $estCorrecte = $question['choisie'] === $question['correcte'];
+            $estCorrecte = $question['choisies'] === $question['correctes'];
             ?>
 
             <article class="quiz-correction-card <?= $estCorrecte ? 'is-correct' : 'is-incorrect' ?>">
@@ -111,8 +105,8 @@ $correction = [
                     <?php foreach ($question['reponses'] as $choixIndex => $reponse): ?>
 
                         <?php
-                        $bonneReponse = $choixIndex === $question['correcte'];
-                        $maReponse = $choixIndex === $question['choisie'];
+                        $bonneReponse = in_array($choixIndex, $question['correctes'], true);
+                        $maReponse = in_array($choixIndex, $question['choisies'], true);
 
                         $classe = $bonneReponse
                             ? 'correct-answer'

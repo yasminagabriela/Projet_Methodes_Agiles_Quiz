@@ -28,13 +28,6 @@ if (!$quiz) {
     exit;
 }
 
-// Le formulaire a été envoyé (après la confirmation) : retour à l'accueil
-// (l'enregistrement des réponses et le calcul du score restent à faire)
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    header('Location: index.php?soumis=1');
-    exit;
-}
-
 // Récupérer les questions du quiz
 $stmt = $pdo->prepare("
     SELECT id, enonce, type
@@ -44,6 +37,72 @@ $stmt = $pdo->prepare("
 ");
 $stmt->execute([$quizId]);
 $questions = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Le formulaire a été envoyé (après la confirmation) :
+// on corrige le quiz, puis on affiche le résultat dans quiz_confirmation.php
+// (le résultat est gardé dans la session : il n'est pas encore enregistré dans la base)
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Réponses cochées : [id_question => [id_reponse, ...]]
+    $choixEtudiant = $_POST['reponses'] ?? [];
+    if (!is_array($choixEtudiant)) {
+        $choixEtudiant = [];
+    }
+
+    $stmtToutes = $pdo->prepare("
+        SELECT id, texte, est_correcte
+        FROM reponses
+        WHERE question_id = ?
+        ORDER BY id
+    ");
+
+    $score = 0;
+    $correction = [];
+
+    foreach ($questions as $q) {
+        $stmtToutes->execute([$q['id']]);
+        $reponses = $stmtToutes->fetchAll(PDO::FETCH_ASSOC);
+
+        // Les id cochés pour cette question (on ignore tout id qui n'est pas une de ses réponses)
+        $idsCoches = array_map('intval', (array) ($choixEtudiant[$q['id']] ?? []));
+
+        $textes = [];
+        $choisies = [];   // positions (0 = A, 1 = B...) cochées par l'étudiant
+        $correctes = [];  // positions des bonnes réponses
+
+        foreach ($reponses as $i => $r) {
+            $textes[] = $r['texte'];
+
+            if ($r['est_correcte']) {
+                $correctes[] = $i;
+            }
+            if (in_array((int) $r['id'], $idsCoches, true)) {
+                $choisies[] = $i;
+            }
+        }
+
+        // Bonne réponse = exactement les bonnes réponses cochées, ni plus ni moins
+        if ($choisies === $correctes) {
+            $score++;
+        }
+
+        $correction[] = [
+            'question'  => $q['enonce'],
+            'reponses'  => $textes,
+            'choisies'  => $choisies,
+            'correctes' => $correctes,
+        ];
+    }
+
+    $_SESSION['resultat'] = [
+        'quizTitre'  => $quiz['titre'],
+        'score'      => $score,
+        'total'      => count($questions),
+        'correction' => $correction,
+    ];
+
+    header('Location: quiz_confirmation.php');
+    exit;
+}
 
 // Récupérer les réponses de chaque question.
 // On ne lit jamais est_correcte dans la page : seulement le nombre de bonnes

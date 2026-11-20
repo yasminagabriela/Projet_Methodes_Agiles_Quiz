@@ -111,10 +111,6 @@ if ($estEnseignant) {
                 <p>Choisissez un quiz pour commencer.</p>
             </section>
 
-            <?php if (isset($_GET['soumis'])): ?>
-                <p class="message-succes">Vos réponses ont bien été envoyées. Merci !</p>
-            <?php endif; ?>
-
             <h2>Quiz disponibles</h2>
             <!-- Liste des quiz -->
             <?php if (empty($quizList)): ?>
