@@ -585,7 +585,7 @@ if (panneauEdition) {
     question.reponses.forEach(function (r, i) {
         creerReponse(r.texte, i, question.type === "vrai_faux");
     });
-    reponsesQuestion.querySelectorAll("input[type='radio']").forEach(function (radio, i) {
+          reponsesQuestion.querySelectorAll(".new-answer-correct input").forEach(function (radio, i) {
         radio.checked = question.reponses[i].est_correcte;
     });
     if (question.type === "choix_multiple") {
@@ -611,7 +611,7 @@ if (panneauEdition) {
         document.querySelectorAll("#new-question-answers .new-answer-row").forEach(function (ligne) {
             reponses.push({
                 texte: ligne.querySelector(".new-answer-text").value.trim(),
-                est_correcte: ligne.querySelector("input[type='radio']").checked,
+                est_correcte: ligne.querySelector(".new-answer-correct input").checked,
             });
         });
 
