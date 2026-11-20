@@ -20,6 +20,15 @@ if (
     && ($_POST['action'] ?? '') === 'publier'
     && $quizId > 0
 ) {
+    // Un quiz sans question ne peut pas être publié
+    $stmt = $pdo->prepare('SELECT COUNT(*) FROM questions WHERE quiz_id = ?');
+    $stmt->execute([$quizId]);
+
+    if ((int) $stmt->fetchColumn() === 0) {
+        header('Location: quiz.php?id=' . $quizId . '&erreur=vide');
+        exit;
+    }
+
     $stmt = $pdo->prepare("
         UPDATE quiz
         SET statut = 'publie'
@@ -133,10 +142,17 @@ $nbQuestions = count($questions);
                         Ajoutez vos questions, puis publiez-le
                         pour le rendre accessible aux étudiants.
                     </p>
+                    <?php if (($_GET['erreur'] ?? '') === 'vide'): ?>
+                        <p class="quiz-publication-erreur">
+                            Ajoutez au moins une question avant de publier le quiz.
+                        </p>
+                    <?php endif; ?>
                 </div>
                 <form method="post">
                     <input type="hidden" name="action" value="publier">
-                    <button type="submit">Publier le quiz</button>
+                    <button type="submit" <?= $nbQuestions === 0 ? 'disabled title="Ajoutez au moins une question"' : '' ?>>
+                        Publier le quiz
+                    </button>
                 </form>
             </section>
         <?php elseif ($quizId > 0 && $quiz['statut'] === 'publie'): ?>

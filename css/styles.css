@@ -736,6 +736,20 @@ select {
     background-color: var(--accent-hover);
 }
 
+.quiz-publication button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.quiz-publication button:disabled:hover {
+    background-color: var(--accent);
+}
+
+.quiz-publication .quiz-publication-erreur {
+    color: var(--danger);
+    margin-top: 8px;
+}
+
 /* Paramètres du quiz */
 
 .quiz-options {
