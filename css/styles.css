@@ -2038,3 +2038,20 @@ body.dark-mode .new-answer-correct:has(input:checked) {
 .question-actions .q-editer:hover {
     background: var(--surface-muted-hover);
 }
+/* Bouton Soumettre le quiz (page passerQuiz.php) */
+.soumettre-quiz {
+    display: block;
+    width: 100%;
+    background: var(--accent);
+    color: var(--on-accent);
+    border: none;
+    border-radius: 30px;
+    padding: 18px;
+    margin-top: 12px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.soumettre-quiz:hover {
+    background: var(--accent-hover);
+}
